@@ -1,0 +1,1 @@
+# Activity Journal - Laura Abalsamo (s353718)

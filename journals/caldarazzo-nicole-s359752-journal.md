@@ -1,0 +1,1 @@
+# Activity Journal - Nicole Caldarazzo (s359752)

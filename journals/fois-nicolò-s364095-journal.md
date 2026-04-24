@@ -1,0 +1,1 @@
+# Activity Journal - Nicolò Fois (s364095)
