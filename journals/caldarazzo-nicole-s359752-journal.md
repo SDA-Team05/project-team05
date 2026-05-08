@@ -7,7 +7,7 @@ Activities done since last commit:
 
 ## May 8th
 Activities done since last commit:
--Analysis of the project structure, focusing specifically on the 'epan' folder.
--Identification of the Chain of Responsibility pattern.
--Overview of the identified pattern: intent, structure, and its application within Wireshark.
+- Analysis of the project structure, focusing specifically on the 'epan' folder.
+- Identification of the Chain of Responsibility pattern.
+- Overview of the identified pattern: intent, structure, and its application within Wireshark.
 
