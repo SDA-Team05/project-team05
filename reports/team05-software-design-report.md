@@ -1,5 +1,6 @@
 # Software Report
 ## Patterns
+In this section is present a list of detected patterns in Wireshark.
 ### Chain of Responsibility
 This pattern gives the possibility to send a request along a chain of potential handlers until one of them handles it. The general idea is to decouple senders and receivers. 
 If *Chain of Responsibility* was not used in Wireshark where thousands of protocols have to be supported, the code would look like a huge conditional block which would be difficult to manage.
