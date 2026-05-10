@@ -11,3 +11,8 @@ Activities done since last commit:
 - Identification of the Chain of Responsibility pattern.
 - Overview of the identified pattern: intent, structure, and its application within Wireshark.
 
+## May 10th
+Activities done since last commit:
+- Continued the review of Chain of Responsibility pattern in Wireshark.
+- Compared this pattern with other design solutions.
+- Wrote a draft of 'Pattern' section in Sotware Design report, discussing results obtained by the analysis done.
