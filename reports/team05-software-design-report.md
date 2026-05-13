@@ -121,3 +121,14 @@ Instead of *Chain of Responsibility*, other solutions could be used:
 -	*observer pattern*, guarantees total decouple but not the processing order adding complexity to debug.
   
 Analyzing pros and cons, the actual pattern stays the better choice because respects hierarchical and sequential nature of network protocols.
+
+### Abstract Factory
+The Abstract Factory pattern provides an interface for creating families of related or dependent objects, so that clients don't need to specify the names of concrete classes in their code. In Wireshark, this pattern is essential for managing the initialization of thousands of different protocols while keeping the core engine decoupled from specific protocol implementations. Otherwise the core would need a manual reference to every single dissector, making the architecture rigid and impossible to extend with plugins.
+
+The *Abstract Factory* role is implemented through the functional interface defined in epan/proto.h, specifically by the function proto_register_protocol() in epan/proto.c which defines "the contract" that every protocol has to follow in order to be integrated with the system. The *Concrete Factory* role is played by each individual dissector file in the epan/dissectors/ folder; each file contains a registration function that "produces" its protocol definition and hands it over to the core. The *Product* is the protocol_t structure (and the associated proto_id), which represents the registered protocol within the engine.
+If this function didn't exist, the alternative would be a massive central file containing an endless (hardcoded) list of all protocols. This would mean that every time someone invented a new protocol, the main Wireshark file would have to be modified, making maintenance extremely complex and preventing anyone from creating private extensions.
+
+
+Rather than Abstract Factory other solutions could be:
+- *Builder Pattern*: it would allow for a step-by-step configuration of complex protocols. However, it would add significant verbosity, repetitive code and memory overhead for managing temporary configuration objects, making the startup process less efficient than the current single function call.
+- *Prototype Pattern*: instead of using a “factory” function that builds the protocol from scratch each time, we could have a pre-configured protocol “prototype.” Each dissector would not be created via parameters, but would be cloned from a base protocol_t object (“prototype”) and then customized only in the necessary fields. This would simplify the creation of objects that are very similar to one another, reducing the need for a complex factory hierarchy. However, in the C language, the deep copy operation is complex and risky for memory. It would require very meticulous manual management of pointers to prevent two protocols from accidentally sharing the same memory area.
