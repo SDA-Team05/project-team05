@@ -16,3 +16,9 @@ Activities done since last commit:
 - Continued the review of Chain of Responsibility pattern in Wireshark.
 - Compared this pattern with other design solutions.
 - Wrote a draft of 'Pattern' section in Sotware Design report, discussing results obtained by the analysis done.
+
+## May 17th
+Activities done since last commit:
+- Employed the "Sourcetrail" tool to observe project's dependencies to help identify other recurring structural patterns.
+- Targeted examination of the 'wiretap' folder.
+- Within the 'wiretap' subsystem, the Strategy pattern was identified with a consequent study of its use in Wireshark.
