@@ -72,7 +72,7 @@ These files represent the modules with the highest number of outgoing dependenci
   <em>Figure: SourceTrail dependency graph of <code>wireshark_main_window_slots.cpp</code>.</em>
 </p>
 
- -->
+
 #### Top Files (High Fan-in)
 These files represent the most imported headers in the entire project. They are the foundational building blocks upon which the rest of the application relies.
 
@@ -104,6 +104,27 @@ These files are the foundational pillars of the software: they are highly stable
   <br>
   <em>Figure: SourceTrail dependency graph of <code>packet.h</code> showing massive high fan-in.</em>
 </p>
+
+### Logical Coupling and Architectural Anomalies
+In addition to static structural dependencies, an evolutionary analysis of the system was conducted by mining the Git version control history. 
+The goal was to identify **Knowledge dependencies** (Temporal coupling): files that frequently change together in the same commits despite potentially lacking a direct structural connection. 
+The analysis was performed by parsing the Git log and calculating the co-change percentage.
+
+By cross-referencing the structural layers with the evolutionary data, a notable architectural anomaly emerged regarding the separation between the Core engine (`EPAN`) and the Presentation layer (`UI`):
+
+| File A (Core engine) | File B (Presentation layer)          | Co-change % | Co-commits |
+| :------------------- | :----------------------------------- | :---------- | :--------- |
+| `epan/prefs.c`       | `ui/qt/layout_preferences_frame.h`   | 85.71%      | 6          |
+| `epan/prefs.h`       | `ui/qt/layout_preferences_frame.h`   | 85.71%      | 6          |
+| `epan/prefs.h`       | `ui/qt/layout_preferences_frame.cpp` | 72.73%      | 8          |
+
+**Architectural Motivation (Design Smell):**
+While it is structurally legitimate for the `UI` layer to depend on `EPAN`, this high temporal coupling reveals a "Shotgun surgery" design smell. 
+Nearly 90% of the time a developer modifies the core preferences logic (`epan/prefs.c` or `epan/prefs.h`), they are forced to simultaneously modify the `Qt` graphical layout files. 
+This indicates a leak of representation details into the core layer or a lack of an intermediate adapter. 
+Ideally, the core preferences engine should evolve independently of the GUI layout. 
+This evolutionary data highlights that the two modules share implicit knowledge and are strongly coupled logically, hindering independent maintainability.
+
 
 ## Patterns
 In this section is present a list of detected patterns in Wireshark.
