@@ -1,0 +1,28 @@
+@startuml C4_Elements_L3
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title C4 Component Diagram (L3) - Wireshark
+
+System_Boundary(wiresharkBoundary, "Wireshark App", "C/C++") {
+    Component(gui, "GUI", "C++/Qt", "")
+    Component(core, "Core", "C/C++", "")
+    Component(capture, "Capture Engine", "C", "")
+    Component(epan, "Epan (Packet Analyzer)", "C", "")
+    Component(wireTap, "Wiretap", "C", "")
+}
+
+Component_Ext(dumpcap, "Dumpcap", "C Executable", "")
+Component_Ext(hardDisk, "Hard Disk", "File System", "")
+
+Rel(gui, core, "")
+Rel(core, capture, "")
+Rel(core, epan, "")
+Rel(core, wireTap, "")
+
+Rel(epan, wireTap, "")
+Rel(capture, dumpcap, "")
+Rel(dumpcap, hardDisk, "")
+Rel(wireTap, hardDisk, "")
+
+SHOW_LEGEND()
+@enduml
