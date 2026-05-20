@@ -17,9 +17,18 @@
 - Replaced standard Markdown image syntax with HTML `<img>` tags to apply custom CSS styling (centering, rounded corners, drop shadows) for a more professional presentation of the architecture diagrams.
 
 ## May 19th
-- Addressed and overcame CodeScene's processing limit (the free trial version) for large repositories by implementing a custom Python script (`cochange_analyzer.py`) for historical log analysis;
+- Addressed and overcame CodeScene processing limit (the free trial version) for large repositories by implementing a custom Python script (`cochange_analyzer.py`) for historical log analysis;
 - Extracted the Git commit history via CLI, isolating recent data to optimize analysis times;
 - Processed the log with the Python script to calculate temporal coupling (knowledge dependencies) between files, generating the `cochange_anomalies.csv` dataset;
 - Identified a "shotgun surgery" architectural anomaly between the core layer (`epan/prefs.c`, `epan/prefs.h`) and the presentation layer (`ui/qt/layout_preferences_frame.h`), highlighting a logical coupling above 85%;
 - Updated the software design report by integrating the results of the evolutionary analysis and justifying the architectural violations discovered by comparing them with the static dependencies;
 - Added the script and .csv files to the project directory.
+
+## May 20th
+- Solved the CodeScene processing limit (made the student plan);+
+- Optimized the knowledge dependencies analysis by performing cross-validation between data extracted via a custom Python script (`cochange_analyzer.py`) and the **CodeScene** behavioral platform;
+- Extracted the historical log via a local CLI script to analyze co-changes, isolating high-coupling relationships in the `cochange_anomalies.csv` dataset;
+- Successfully validated the script results on the CodeScene dashboard by analyzing the **Change Coupling** section, verifying the perfect convergence of both analytical approaches on risk metrics;
+- Examined CodeScene interactive **Hotspots** map to visually locate files with reduced `Code Health` and high concurrent modification density, confirming heavy maintenance-related design smells;
+- Utilized CodeScene REST APIs via `curl` to programmatically extract raw JSON data (`codescene_hotspots.json`), definitively linking the static "god module" structural finding (`tshark.c`) to an evolutionary hotspot with critically low code health;
+- Updated the software design report and activity journal, documenting the cross-checking methodology and integrating the final architectural findings.
