@@ -3,6 +3,10 @@
 ## May 21st
 Activity done since last commit:
 - Finalized Component Diagram draft
+- Updated C4 PUML notation with specific Database components
+- Investigated relationships between Capture-Wiretap
+- Investigated core relationships with Utilities
+- Annotated the complete flow between the components
   
 ## May 19th
 Activity done since last commit:
