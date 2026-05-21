@@ -3,26 +3,35 @@
 
 title C4 Component Diagram (L3) - Wireshark
 
-System_Boundary(wiresharkBoundary, "Wireshark App", "C/C++") {
-    Component(gui, "GUI", "C++/Qt", "Handling of all user input/output (all windows, dialogs and such)")
-    Component(core, "Core", "C/C++", "Main glue code that holds the other blocks together")
-    Component(capture, "Capture", "C", "")
-    Component(epan, "Epan (Packet Analyzer)", "C", "The packet analyzing engine")
-    Component(wireTap, "Wiretap", "C", "Reads and writes capture files in libpcap, pcapng, and many other file formats")
+Container_Boundary(wiresharkBoundary, "Wireshark App") {
+    Component(gui, "GUI", "Component: C++/Qt", "Graphical Interface for user interaction, displaying captured data and configuring captures")
+    Component(core, "Core", "Component: C/C++", "Orchestrates the other blocks, coordinates the capture process, and manages capture sessions")
+    Component(capture, "Capture", "Component: C", "The interface to the capture engine. Coordinates the capture process and manages capture sessions")
+    Component(epan, "Epan (Enhanced Packet ANalyzer)", "Component: C", "The packet analalyzing engine. Dissects and analyzes packets")
+    Component(wireTap, "Wiretap", "Component: C", "Reads and writes capture files in libpcap, pcapng, and many other file formats")
 }
 
-Component_Ext(dumpcap, "Dumpcap", "C Executable", "The capture engine itself, executed with elevated privileges.")
-Component_Ext(hardDisk, "Hard Disk", "File System", "")
+Container_Ext(dumpcap, "Dumpcap", "Container: C", "The capture engine itself, executed with elevated privileges.")
+SystemDb_Ext(filesystem, "File System", "Stores temporary and saved .pcapng files")
 
-Rel(gui, core, "Shows data from", "Signals & Slots Events")
-Rel(core, capture, "Delegates capture start/stop to")
-Rel(core, epan, "Requests packet dissection from")
-Rel(core, wireTap, "Requests file read/write from")
+Rel(gui, core, "Sends commands to and receives updates from", "Signals & Slots")
+Rel(core, capture, "Delegates capture management to", "Function calling")
+Rel(core, epan, "Requests packet dissection from", "Function calling")
 
-Rel(capture, dumpcap, "Launches and communicates with", "IPC Pipe")
-Rel(capture, wireTap, "Synchronizes live file reading with")
-Rel(dumpcap, hardDisk, "Writes raw packets to")
-Rel(wireTap, hardDisk, "Reads packets from and writes packets to")
+Rel(capture, dumpcap, "Launches and communicates with", "IPC Sync Pipe")
+' Capture initializes dumpcap. The core communicates with Dumpcap thanks to Capture
+Rel(dumpcap, filesystem, "Writes raw packets to", "File I/O")
+' Dumpcap writes raw packets in a temporary file on the hard disk.
+' Once a packets block has been written, Dumpcap signals Capture, which in turn signals the Core
+
+Rel(core, wireTap, "Receives files read from", "Function calling")
+' Once the Core receives the signal, it uses Wiretap to read the packets
+
+Rel(wireTap, filesystem, "Reads packets from and writes packets to", "File I/O")
+' Wiretap reads the packets from the hard disk
+
+' CONNECTION BETWEEN WIRETAP AND CAPTURE IS ONLY FOR SHARED DATA STRUCTURES AND FILE FORMATS, NOT FOR FUNCTION CALLS.
+' UTILITIES ARE EXCLUDED SINCE THEY ARE NOT COMPONENTS, BUT RATHER HELPER CLASSES AND FUNCTIONS USED BY THE COMPONENTS.
 
 SHOW_LEGEND()
 @enduml

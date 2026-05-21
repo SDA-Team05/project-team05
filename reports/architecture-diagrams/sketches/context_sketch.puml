@@ -11,7 +11,7 @@ System(wireshark, "Wireshark System", "Network protocol analyzer. Captures, deco
 ' Sistemi Esterni
 System_Ext(npcap, "npcap", "Captures raw packets on Windows systems")
 System_Ext(libpcap, "libpcap", "Captures raw packets on Unix-like systems")
-System_Ext(filesystem, "File System / Hard Disk", "Stores temporary and saved .pcapng files")
+SystemDb_Ext(filesystem, "File System / Hard Disk", "Stores temporary and saved .pcapng files")
 
 ' Relazioni
 Rel(wiresharkUser, wireshark, "Configures captures and analyzes traffic")
