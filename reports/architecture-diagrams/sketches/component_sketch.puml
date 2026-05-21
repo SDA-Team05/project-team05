@@ -4,25 +4,25 @@
 title C4 Component Diagram (L3) - Wireshark
 
 System_Boundary(wiresharkBoundary, "Wireshark App", "C/C++") {
-    Component(gui, "GUI", "C++/Qt", "")
-    Component(core, "Core", "C/C++", "")
-    Component(capture, "Capture Engine", "C", "")
-    Component(epan, "Epan (Packet Analyzer)", "C", "")
-    Component(wireTap, "Wiretap", "C", "")
+    Component(gui, "GUI", "C++/Qt", "Handling of all user input/output (all windows, dialogs and such)")
+    Component(core, "Core", "C/C++", "Main glue code that holds the other blocks together")
+    Component(capture, "Capture", "C", "")
+    Component(epan, "Epan (Packet Analyzer)", "C", "The packet analyzing engine")
+    Component(wireTap, "Wiretap", "C", "Reads and writes capture files in libpcap, pcapng, and many other file formats")
 }
 
-Component_Ext(dumpcap, "Dumpcap", "C Executable", "")
+Component_Ext(dumpcap, "Dumpcap", "C Executable", "The capture engine itself, executed with elevated privileges.")
 Component_Ext(hardDisk, "Hard Disk", "File System", "")
 
-Rel(gui, core, "")
-Rel(core, capture, "")
-Rel(core, epan, "")
-Rel(core, wireTap, "")
+Rel(gui, core, "Shows data from", "Signals & Slots Events")
+Rel(core, capture, "Delegates capture start/stop to")
+Rel(core, epan, "Requests packet dissection from")
+Rel(core, wireTap, "Requests file read/write from")
 
-Rel(epan, wireTap, "")
-Rel(capture, dumpcap, "")
-Rel(dumpcap, hardDisk, "")
-Rel(wireTap, hardDisk, "")
+Rel(capture, dumpcap, "Launches and communicates with", "IPC Pipe")
+Rel(capture, wireTap, "Synchronizes live file reading with")
+Rel(dumpcap, hardDisk, "Writes raw packets to")
+Rel(wireTap, hardDisk, "Reads packets from and writes packets to")
 
 SHOW_LEGEND()
 @enduml

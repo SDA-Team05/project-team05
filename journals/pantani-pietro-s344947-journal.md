@@ -1,5 +1,9 @@
 # Activity Journal - Pietro Pantani (s344947)
 
+## May 21st
+Activity done since last commit:
+- Finalized Component Diagram draft
+  
 ## May 19th
 Activity done since last commit:
 - Investigation on containers and side tools
