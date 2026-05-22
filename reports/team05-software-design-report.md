@@ -164,6 +164,7 @@ This perfectly demonstrates how static structural smells (the god module anti-pa
 
 ## Patterns
 In this section is present a list of detected patterns in Wireshark.
+
 ### Chain of Responsibility
 This pattern gives the possibility to send a request along a chain of potential handlers until one of them handles it. The general idea is to decouple senders and receivers. 
 If *Chain of Responsibility* was not used in Wireshark where thousands of protocols have to be supported, the code would look like a huge conditional block which would be difficult to manage.
@@ -174,10 +175,23 @@ The **Handler** role is developed by the struct `dissector_handle_t` defined in 
 
 Instead of *Chain of Responsibility*, other solutions could be used:
 -	*centralized switch/if-else*, as written above, simple to use only with few protocols;
--	 *strategy pattern*, simpler conceptually but not capable to manage hierarchical style of protocols;
--	*observer pattern*, guarantees total decouple but not the processing order adding complexity to debug.
+-	 *Strategy pattern*, simpler conceptually but not capable to manage hierarchical style of protocols;
+-	*Observer pattern*, guarantees total decouple but not the processing order adding complexity to debug.
   
 Analyzing pros and cons, the actual pattern stays the better choice because respects hierarchical and sequential nature of network protocols.
+
+### Strategy 
+This pattern defines a family of algorihms, putting each of them into a separate class, and making them interchangeable. This pattern is particularly useful when you have multiple algorithms for a specific task and want to be able to switch between them dynamically. 
+
+The discussed pattern is present in the `wiretap` subsystem which reads and writes capture files in different formats. Since the project uses the C language, the pattern is simulated with structs and function pointers.
+
+The **Strategy** role is fulfilled by the struct `file_type_subtype_info` defined in `wiretap/wtap.h`, which defines the functions protoypes that each file format must implement to interact with Wireshark. Each file designed for a specific format such as `wiretap/json.c`, `wiretap/snoop.c` or `wiretap/pcapng.c` represents a **Concrete Strategy** since they contain static constant variables of the struct `file_type_subtype_info` (for example in `wiretap/json.c` is present `json_info`). The **Context** role is principally managed by `wiretap/file_access.c` and encapsulated at runtime into Wireshark’s session structures. This file allows the storage of tables or arrays of all strategies then, when a users open a file, Wireshark searches and identifies the right Concrete Strategy saving the structure pointer into the current session.
+
+Instead of the *Strategy* pattern, other solutions could be used:
+-	*monolithic switch or if/else chain*: it eliminates the overhead of function pointer calls but violates of the Open/Closed Principle;
+-	*Chain of Responsibility pattern*: the file to be opened is passed through a chain of modules until it is recognized but the centralized control given by the Context is lost.
+
+Analyzing the different options, the chosen pattern remains the better choice because it enforces strict modularity and offers a centralized orchestration.
 
 ### Abstract Factory
 The Abstract Factory pattern provides an interface for creating families of related or dependent objects, so that clients don't need to specify the names of concrete classes in their code. In Wireshark, this pattern is essential for managing the initialization of thousands of different protocols while keeping the core engine decoupled from specific protocol implementations. Otherwise the core would need a manual reference to every single dissector, making the architecture rigid and impossible to extend with plugins.
