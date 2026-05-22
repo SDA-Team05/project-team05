@@ -22,3 +22,9 @@ Activities done since last commit:
 - Employed the "Sourcetrail" tool to observe project's dependencies to help identify other recurring structural patterns.
 - Targeted examination of the 'wiretap' folder.
 - Within the 'wiretap' subsystem, the Strategy pattern was identified with a consequent study of its use in Wireshark.
+
+## May 22th
+Activities done since last commit:
+- Continued the review of Strategy pattern in Wireshark.
+- Compared this pattern with other solutions with pros and cons.
+- Updated the draft of 'Pattern' section in Sotware Design report adding conclusions obtained from the study of the Strategy pattern.
