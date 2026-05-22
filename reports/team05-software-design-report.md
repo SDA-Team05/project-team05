@@ -29,9 +29,6 @@ However, the dependency graph revealed bidirectional coupling:
   <em>Figure: Dependency graph generated via Understand, illustrating the massive expected top-down flow alongside the minor architectural violations (bidirectional red arrows).</em>
 </p>
 
-<!-- ![Understand Dependency Graph showing bidirectional coupling](./dependency%20graphs/subsystem_butterfly_coupling.png)
-*Figure: Dependency graph generated via Understand, illustrating the massive expected top-down flow alongside the minor architectural violations (bidirectional red arrows).* -->
-
 ### Top and Bottom Files by Dependency
 
 A static analysis of `#include` directives across the codebase was performed to identify the structural pillars (High Fan-in) and the main orchestrators (High Fan-out) of the system.
@@ -117,8 +114,9 @@ Both tools successfully identified severe coupling, though their different analy
 **1. Cross-layer knowledge leak (identified via Python script):**
 The custom script revealed a high-risk `shotgun surgery` smell across system boundaries. Nearly 90% of the time a core architectural preference is altered (`epan/prefs.c`), developers are forced to synchronously update the layout implementation in the Qt presentation layer (`ui/qt/layout_preferences_frame.h`). This uncovers an implicit knowledge leak, as the core engine should ideally remain agnostic of GUI configurations.
 
+
 | File A (Core / Architecture module) | File B (Presentation / Context layer) | Co-change % (Python) | Risk category   |
-| :---------------------------------- | :------------------------------------ | :--- --------------- | :-------------- |
+| :------------------------------     | :------------------------------       | :-----------------   | :-------------- |
 | `epan/prefs.c`                      | `ui/qt/layout_preferences_frame.h`    | 85.71%               | shotgun surgery |
 | `epan/prefs.h`                      | `ui/qt/layout_preferences_frame.cpp`  | 72.73%               | shotgun surgery |
 

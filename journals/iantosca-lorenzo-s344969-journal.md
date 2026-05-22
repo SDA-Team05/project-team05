@@ -32,3 +32,6 @@
 - Examined CodeScene interactive **Hotspots** map to visually locate files with reduced `Code Health` and high concurrent modification density, confirming heavy maintenance-related design smells;
 - Utilized CodeScene REST APIs via `curl` to programmatically extract raw JSON data (`codescene_hotspots.json`), definitively linking the static "god module" structural finding (`tshark.c`) to an evolutionary hotspot with critically low code health;
 - Updated the software design report and activity journal, documenting the cross-checking methodology and integrating the final architectural findings.
+
+## May 22
+- Updated design report and journal (fixed table formatting)
