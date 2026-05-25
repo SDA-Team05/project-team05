@@ -21,3 +21,7 @@ Activities done since last commit:
 - Investigation of the role and relationships between the proto_node, proto_item, and proto_tree structures within epan/proto.h and epan/proto.c. Understanding how Wireshark uses these fundamental elements to construct the protocol tree that maps each level of the analyzed packet;
 - Study of how dissectors rely on these structures, utilizing functions such as proto_tree_add_item() to recursively nest protocols and fields, maintaining a clear separation between the raw data and its logical representation.
 
+## May 23th
+Activities done since last commit:
+-Identified the architectural relationship between the proto_node structures as a concrete implementation of the Composite Pattern, noting how it allows the dissection engine to treat both individual packet fields and nested protocol containers uniformly;
+-Initiated a comparative analysis of potential alternative design solutions to evaluate their respective trade-offs in terms of memory overhead and processing efficiency.
