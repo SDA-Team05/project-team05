@@ -25,3 +25,8 @@ Activities done since last commit:
 Activities done since last commit:
 - Identified the architectural relationship between the proto_node structures as a concrete implementation of the Composite Pattern, noting how it allows the dissection engine to treat both individual packet fields and nested protocol containers uniformly;
 - Initiated a comparative analysis of potential alternative design solutions to evaluate their respective trade-offs in terms of memory overhead and processing efficiency.
+
+## May 25th
+Activities done since last commit:
+- Completed the comparative analysis of the Composite pattern against alternative structural and behavioral solutions such as the Iterator and Flyweight patterns, finalizing the evaluation of their respective memory and performance trade-offs;
+- Updated the design report.
