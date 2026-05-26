@@ -22,3 +22,9 @@ Activity done since last commit:
 - Refined the Context Diagram (L1) by treating Wireshark as a pure black box, properly abstracting internal deployable components like Dumpcap
 - Drafted the Container Diagram (L2) using PlantUML and the formal C4 Model to clarify the separation of privileges and the roles of the components
 - Integrated both automatic and detailed custom legends into the PlantUML scripts to ensure clear architectural documentation
+
+## May 25th
+Activity done since last commit:
+- Investigated the actual nature of the Core module, clarifying its role as "glue code", rather than a well-defined standalone component
+- Performed a SOLID principles analysis for each L3 component
+- Developed a Python script to compute quantitative coupling metrics (Ca, Ce, Instability) by statically analyzing #include directives across 4109 source files (99.8% repository coverage), producing a ranked metrics table and a full cross-module dependency matrix
