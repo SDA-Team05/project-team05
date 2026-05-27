@@ -33,5 +33,11 @@
 - Utilized CodeScene REST APIs via `curl` to programmatically extract raw JSON data (`codescene_hotspots.json`), definitively linking the static "god module" structural finding (`tshark.c`) to an evolutionary hotspot with critically low code health;
 - Updated the software design report and activity journal, documenting the cross-checking methodology and integrating the final architectural findings.
 
-## May 22
+## May 22th
 - Updated design report and journal (fixed table formatting)
+
+## May 27th
+- Executed the `coupling_analysis.py` script to compute Fan-in (Ca), Fan-out (Ce) and Martin's Instability (I) metrics across Wireshark's macro-modules;
+- Resolved a Windows PowerShell character encoding issue (UnicodeEncodeError) during standard output redirection by forcing the UTF-8 execution flag to correctly generate the `pairing_metrics.txt` data report;
+- Integrated the extracted instability metrics into the software design report to mathematically validate the top-down layered architecture;
+- Correlated the numerical data to prove the extreme instability of GUI/orchestrator modules like `tshark` ($I = 1.000$) versus the foundational stability of core engines like `wsutil` and `epan`.

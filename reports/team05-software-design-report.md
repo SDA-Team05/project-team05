@@ -29,6 +29,20 @@ However, the dependency graph revealed bidirectional coupling:
   <em>Figure: Dependency graph generated via Understand, illustrating the massive expected top-down flow alongside the minor architectural violations (bidirectional red arrows).</em>
 </p>
 
+To support the visual analysis, the architectural coupling metrics (Fan-in $Ca$, Fan-out $Ce$, and Martin's Instability $I$) calculated on the macro-modules mathematically confirm the system's layered topology.
+ Instability is calculated using the formula $I = \frac{Ce}{Ca + Ce}$, producing an index that ranges from 0 (maximum stability) to 1 (maximum instability).
+
+| Module / Subsystem | Architectural Role       | Fan-in (Ca) | Fan-out (Ce) | Instability (I) |
+| :---               | :---                     | :---        | :---         | :---            |
+| `wsutil`           | Base utilities           | 22          | 0            | **0.000**       |
+| `epan`             | Core engine & dissectors | 16          | 3            | **0.158**       |
+| `ui_qt`            | Presentation layer       | 2           | 9            | **0.818**       |
+| `tshark`           | CLI orchestrator         | 0           | 9            | **1.000**       |
+
+**Architectural Validation:**
+As expected in a healthy top-down architecture, the instability metrics polarize the system. Base modules such as `wsutil` and `epan` show an instability close to zero (respectively 0.000 and 0.158): with very high Fan-in, they act as structural pillars that cannot be modified without causing extensive recompilation. 
+Conversely, the presentation and orchestration layers (`ui_qt`, `tshark`) absorb most of the outgoing dependencies (high Fan-out); they are therefore "unstable" ($I between 0.818 and 1.000$), confirming their role as high-level orchestrators that are easy to modify without triggering cascading effects in the rest of the application.
+
 ### Top and Bottom Files by Dependency
 
 A static analysis of `#include` directives across the codebase was performed to identify the structural pillars (High Fan-in) and the main orchestrators (High Fan-out) of the system.
