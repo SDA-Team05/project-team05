@@ -8,7 +8,7 @@ Container_Boundary(wiresharkBoundary, "Wireshark App") {
     Component(core, "Core", "Component: C/C++", "Orchestrates the other blocks, coordinates the capture process, and manages capture sessions")
     Component(capture, "Capture", "Component: C", "The interface to the capture engine. Coordinates the capture process and manages capture sessions")
     Component(epan, "Epan (Enhanced Packet ANalyzer)", "Component: C", "The packet analalyzing engine. Dissects and analyzes packets")
-    Component(wireTap, "Wiretap", "Component: C", "Reads and writes capture files in libpcap, pcapng, and many other file formats")
+    Component(wireTap, "Wiretap", "Component: C", "Reads and writes capture files in more than 20 file formats (.pcap, .cap, etc.)")
 }
 
 Container_Ext(dumpcap, "Dumpcap", "Container: C", "The capture engine itself, executed with elevated privileges.")
@@ -24,7 +24,7 @@ Rel(dumpcap, filesystem, "Writes raw packets to", "File I/O")
 ' Dumpcap writes raw packets in a temporary file on the hard disk.
 ' Once a packets block has been written, Dumpcap signals Capture, which in turn signals the Core
 
-Rel(core, wireTap, "Receives files read from", "Function calling")
+Rel(core, wireTap, "Calls API to receive files read by", "Function calling")
 ' Once the Core receives the signal, it uses Wiretap to read the packets
 
 Rel(wireTap, filesystem, "Reads packets from and writes packets to", "File I/O")

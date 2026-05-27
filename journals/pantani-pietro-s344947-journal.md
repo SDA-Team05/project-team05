@@ -1,5 +1,10 @@
 # Activity Journal - Pietro Pantani (s344947)
 
+## May 27th
+Activity done since last commit:
+- Further investigation on Component relationships and on formats supported by Wiretap 
+- Updated C4 PUML notation with corrected information
+
 ## May 21st
 Activity done since last commit:
 - Finalized Component Diagram draft
