@@ -30,3 +30,13 @@ Activities done since last commit:
 Activities done since last commit:
 - Completed the comparative analysis of the Composite pattern against alternative structural and behavioral solutions such as the Iterator and Flyweight patterns, finalizing the evaluation of their respective memory and performance trade-offs;
 - Updated the design report.
+
+## May 26th
+Activities done since last commit:
+- Investigated the central routing mechanisms within the dissection engine, focusing on how Wireshark prevents duplicate protocol registrations across multiple modules;
+- Examined the source code in epan/packet.c to understand the lifecycle and memory management of the dissector_tables.
+
+## May 27th
+Activities done since last commit:
+- Identified the implementation of the dissector_tables as a C-adapted instance of the Singleton pattern, functioning as the strict Single Source of Truth for packet routing;
+- Mapped the architectural roles of the pattern, noting the use of the static keyword to hide the global data structure and the provision of public accessor functions, such as find_dissector_table(), to act as the global access point.
