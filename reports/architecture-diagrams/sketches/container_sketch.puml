@@ -8,7 +8,7 @@ Person(wiresharkUser, "User", "A person who wants to analyze network traffic")
 ' Sistemi esterni identici al livello 1
 System_Ext(npcap, "npcap", "Captures raw packets on Windows systems")
 System_Ext(libpcap, "libpcap", "Captures raw packets on Unix-like systems")
-System_Ext(filesystem, "File System / Hard Disk", "Stores temporary and saved .pcapng files")
+SystemDb_Ext(filesystem, "File System / Hard Disk", "Stores temporary and saved .pcapng files")
 
 ' Confine del sistema Wireshark
 System_Boundary(wiresharkBoundary, "Wireshark System", "Wireshark Foundation") {
