@@ -1,5 +1,10 @@
 # Activity Journal - Pietro Pantani (s344947)
 
+## May 28th
+Activity done since last commit:
+- Fix on used technologies indicated in the diagram
+- Identification of SOLID principles violations
+
 ## May 27th
 Activity done since last commit:
 - Further investigation on Component relationships and on formats supported by Wiretap 

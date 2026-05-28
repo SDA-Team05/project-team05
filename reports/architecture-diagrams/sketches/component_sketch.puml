@@ -5,7 +5,7 @@ title C4 Component Diagram (L3) - Wireshark
 
 Container_Boundary(wiresharkBoundary, "Wireshark App") {
     Component(gui, "GUI", "Component: C++/Qt", "Graphical Interface for user interaction, displaying captured data and configuring captures")
-    Component(core, "Core", "Component: C/C++", "Orchestrates the other blocks, coordinates the capture process, and manages capture sessions")
+    Component(core, "Core", "Component: C", "Orchestrates the other blocks, coordinates the capture process, and manages capture sessions")
     Component(capture, "Capture", "Component: C", "The interface to the capture engine. Coordinates the capture process and manages capture sessions")
     Component(epan, "Epan (Enhanced Packet ANalyzer)", "Component: C", "The packet analalyzing engine. Dissects and analyzes packets")
     Component(wireTap, "Wiretap", "Component: C", "Reads and writes capture files in more than 20 file formats (.pcap, .cap, etc.)")

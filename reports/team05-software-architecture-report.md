@@ -35,3 +35,12 @@ A command-line program written in C whose sole purpose is to capture network pac
 *   **IPC Communication:** `dumpcap` notifies the Wireshark GUI of the saving of new packets via a system pipe. The GUI reads the file asynchronously, decodes the bytes, and displays them on the screen for the user.
 
 Only `dumpcap` needs to run with Administrator/Root privileges to access the network card. The Wireshark GUI (which is massive and potentially vulnerable) runs as a normal user. If a malicious packet crashes the GUI, the operating system remains safe. Furthermore, by being separate, `dumpcap` handles only the I/O operation (Network -> Disk) at maximum speed.
+
+## Solid Principles violations
+- Single-Responsibility: respected, each component interacts with only one other.
+- Open/Closed: respected
+  - EPAN uses a plugin architecture to allow to add custom Dissectors
+  - It's possible to add new formats to Wiretap
+- Liskov Substitution: respected in GUI (Qt framework), not applicable to the rest of the code.
+- Interface Segregation: violated, many interfaces (headers) are very big (EPAN)
+- Dependency Inversion: interfaces are not present, functions are called directly
