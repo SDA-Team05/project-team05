@@ -8,28 +8,29 @@ Person(wiresharkUser, "User", "A person who wants to analyze network traffic")
 ' Sistemi esterni identici al livello 1
 System_Ext(npcap, "npcap", "Captures raw packets on Windows systems")
 System_Ext(libpcap, "libpcap", "Captures raw packets on Unix-like systems")
-SystemDb_Ext(filesystem, "File System / Hard Disk", "Stores temporary and saved .pcapng files")
 
 ' Confine del sistema Wireshark
-System_Boundary(wiresharkBoundary, "Wireshark System", "Wireshark Foundation") {
+System_Boundary(wiresharkBoundary, "Wireshark System") {
     
-    Container(wiresharkApp, "Wireshark Desktop App", "C++, Qt", "GUI application. Orchestrates the capture, reads files, decodes protocols and displays data.")
+    Container(wiresharkApp, "Wireshark App", "C, C++, Qt", "GUI application. Orchestrates the capture, reads files, decodes protocols and displays data.")
     
-    Container(dumpcap, "Dumpcap Engine", "C", "Privileged executable. Intercepts network traffic and saves raw packets directly to disk.")
+    Container(dumpcap, "Dumpcap", "C", "Privileged executable. Intercepts network traffic and saves raw packets directly to disk.")
+
+    ContainerDb(filesystem, "File System", "Local OS File System", "Stores temporary and saved .pcapng files")
 }
 
 ' Relazioni Utente
 Rel(wiresharkUser, wiresharkApp, "Consults packets and configures capture")
 
 ' Relazioni interne (IPC)
-Rel(wiresharkApp, dumpcap, "Controls and monitors status (via IPC/Sync Pipe)")
+Rel(wiresharkApp, dumpcap, "Controls and monitors status", "IPC Sync Pipe")
 
 ' Relazioni con i Sistemi Esterni
-Rel(npcap, dumpcap, "Provides raw packets (Windows)")
-Rel(libpcap, dumpcap, "Provides raw packets (Unix)")
+Rel(npcap, dumpcap, "Provides raw packets", "Windows calls")
+Rel(libpcap, dumpcap, "Provides raw packets", "Unix calls")
 
-Rel(dumpcap, filesystem, "Writes raw network packets")
-Rel(wiresharkApp, filesystem, "Reads captured packets for analysis")
+Rel(dumpcap, filesystem, "Writes raw packets to", "File I/O")
+Rel(wiresharkApp, filesystem, "Reads packets from and writes packets to", "File I/O")
 
 SHOW_LEGEND()
 @enduml

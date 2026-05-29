@@ -1,5 +1,9 @@
 # Activity Journal - Pietro Pantani (s344947)
 
+## May 29th
+Activity done since last commit:
+- Updated diagram according to recommendations received after review
+
 ## May 28th
 Activity done since last commit:
 - Fix on used technologies indicated in the diagram
