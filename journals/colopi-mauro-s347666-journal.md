@@ -22,3 +22,7 @@ Activity done since last commit:
 - Mapped the internal components of the epan container for the Level 3 Component Diagram, specifically isolating the Dissector Engine, the Display Filter Engine (dfilter), and the Memory Management framework (wmem).
 - Investigated the dynamic loading mechanism for external plugins (e.g., Lua scripts via wslua and compiled C dissectors) to accurately represent EPAN's runtime dependencies on the Local File System.
 
+## May 29th
+- Designed the Level 3 Component Diagram (C4 model) for the Dumpcap executable, mapping its internal C modules and boundaries.
+- Analyzed and documented the "Privilege Separation" security pattern, detailing the interactions between the Syncpipe Controller, Privilege Manager, and Capture Engine.
+- Formalized architectural considerations regarding the integration of external OS network libraries (libpcap/Npcap) and asynchronous File System I/O relative to the privileged container.
