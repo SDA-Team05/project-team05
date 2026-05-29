@@ -28,3 +28,9 @@ Activities done since last commit:
 - Continued the review of Strategy pattern in Wireshark.
 - Compared this pattern with other solutions with pros and cons.
 - Updated the draft of 'Pattern' section in Sotware Design report adding conclusions obtained from the study of the Strategy pattern.
+
+## May 29th
+Activities done since last commit:
+- Analysis of the Tap system using project and official documentation to try detecting a new pattern.
+- The Observer pattern was identified in the 'epan' folder and in particular in the using of Tap.
+- Compared this pattern with other solutions such ad Mediator pattern searching for pros and cons.
