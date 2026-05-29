@@ -40,3 +40,8 @@ Activities done since last commit:
 Activities done since last commit:
 - Identified the implementation of the dissector_tables as a C-adapted instance of the Singleton pattern, functioning as the strict Single Source of Truth for packet routing;
 - Mapped the architectural roles of the pattern, noting the use of the static keyword to hide the global data structure and the provision of public accessor functions, such as find_dissector_table(), to act as the global access point.
+
+## May 29th
+Activities done since last commit:
+- Conducted a comparative evaluation of alternative design solutions for global resource access, analyzing the performance trade-offs of the Proxy and Facade patterns;
+- Finalized the fourth architectural pattern analysis and updated the design report with the documentation of the Singleton pattern.
