@@ -3,7 +3,6 @@
 File: epan/proto.h
 This struct represents the Component, which is the base structure that defines the unified interface and the pointers for hierarchical relationships.
 */
-
 typedef struct _proto_node
 {
     struct _proto_node *first_child; /* Pointer to the first nested node (child) */
