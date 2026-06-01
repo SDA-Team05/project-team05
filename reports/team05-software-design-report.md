@@ -181,16 +181,15 @@ In this section is present a list of detected patterns in Wireshark.
 
 ### Chain of Responsibility
 This pattern gives the possibility to send a request along a chain of potential handlers until one of them handles it. The general idea is to decouple senders and receivers. 
-If *Chain of Responsibility* was not used in Wireshark where thousands of protocols have to be supported, the code would look like a huge conditional block which would be difficult to manage.
 
 The discussed pattern is used in the `epan` folder of the project to implement the dissectors chain: every dissector analyzes its packet level and pass the payload to the next dissector through dispatch tables without knowing who will handle it. The classic pattern has been adapted from an OOP style to a C architecture based on modules and table.
 
-The **Handler** role is developed by the struct `dissector_handle_t` defined in `epan/packet.c`and by the type function `dissector_t` declared in `epan/packet.h`. The successor link isn’t in the Handler but in the `dissector_table_t`. Every `epan/dissectors/packet-*.c` is a **Concrete Handler** which manages the packet or passes it to the successor calling it by `dissector_try_uint()` or `call_dissector()`. Some examples are `dissect_frame()` from `packet-frame.c`, `dissect_ip()` from `packet-ip.c` and `dissect_tcp()` from `packet-tcp.c`. The **Client**, which sends the first request is split into two different moments in Wireshark: chain building with every `proto_reg_handoff_*()` call in `packet-*.c`files and request send with `epan_dissect_run()` in `epan/epan.c` which hands over the execution to the packet processing core in `epan/packet.c`, which bootstraps the entire chain by calling `call_dissector()` on the initial `frame_handle`.
+The **Handler** role is developed by the struct `dissector_handle_t` defined in `epan/packet.c`and by the type function `dissector_t` declared in `epan/packet.h`. The successor link isn’t in the Handler but in the `dissector_table_t`. Every `epan/dissectors/packet-*.c` is a **Concrete Handler** which manages the packet or passes it to the successor calling it by `dissector_try_uint()` or `call_dissector()`. The **Client**, which sends the first request is split into two different moments in Wireshark: chain building with every `proto_reg_handoff_*()` call in `packet-*.c`files and request send with `epan_dissect_run()` in `epan/epan.c` which hands over the execution to the packet processing core in `epan/packet.c`, which bootstraps the entire chain by calling `call_dissector()` on the initial `frame_handle`.
 
 Instead of *Chain of Responsibility*, other solutions could be used:
--	*centralized switch/if-else*, as written above, simple to use only with few protocols;
--	 *Strategy pattern*, simpler conceptually but not capable to manage hierarchical style of protocols;
--	*Observer pattern*, guarantees total decouple but not the processing order adding complexity to debug.
+-	*centralized switch/if-else*: simple to use but only with few protocols;
+-	 *Strategy pattern*: simpler conceptually but not capable to manage hierarchical style of protocols;
+-	*Observer pattern*: guarantees total decouple but not the processing order adding complexity to debug.
   
 Analysing pros and cons, the actual pattern stays the best choice because respects hierarchical and sequential nature of network protocols.
 
@@ -199,7 +198,7 @@ This pattern defines a family of algorihms, putting each of them into a separate
 
 The discussed pattern is present in the `wiretap` subsystem which reads and writes capture files in different formats. Since the project uses the C language, the pattern is simulated with structs and function pointers.
 
-The **Strategy** role is fulfilled by the struct `file_type_subtype_info` defined in `wiretap/wtap.h`, which defines the functions protoypes that each file format must implement to interact with Wireshark. Each file designed for a specific format such as `wiretap/json.c`, `wiretap/snoop.c` or `wiretap/pcapng.c` represents a **Concrete Strategy** since they contain static constant variables of the struct `file_type_subtype_info` (for example in `wiretap/json.c` is present `json_info`). The **Context** role is principally managed by `wiretap/file_access.c` and encapsulated at runtime into Wireshark’s session structures. This file allows the storage of tables or arrays of all strategies then, when a users open a file, Wireshark searches and identifies the right Concrete Strategy saving the structure pointer into the current session.
+The **Strategy** role is fulfilled by the struct `file_type_subtype_info` defined in `wiretap/wtap.h`, which defines the functions protoypes that each file format must implement to interact with Wireshark. Each file designed for a specific format such as `wiretap/json.c` or `wiretap/pcapng.c` represents a **Concrete Strategy** since they contain static constant variables of the struct `file_type_subtype_info`. The **Context** role is principally managed by `wiretap/file_access.c` and encapsulated at runtime into Wireshark’s session structures. This file allows the storage of tables or arrays of all strategies then, when a users open a file, Wireshark searches and identifies the right Concrete Strategy saving the structure pointer into the current session.
 
 Instead of the *Strategy* pattern, other solutions could be used:
 -	*monolithic switch or if/else chain*: it eliminates the overhead of function pointer calls but violates of the Open/Closed Principle;
@@ -210,16 +209,16 @@ Analysing the different options, the chosen pattern remains the best choice sinc
 ### Observer
 This pattern defines an object which maintains a list of dependents and automatically notifies them when its state changes. The *Observer* pattern guarantees the abstract coupling and the respect for Open/Closed Principle.
 
-The discussed pattern is used in the `epan` folder of the project to implement the Tap system. A tap allows other items to see what is happening as a protocol is dissected. It is registered with the main program and then called on each dissection. Since the project uses the C language, the pattern is developed with an event structure based on callbacks.
+The discussed pattern is used in the `epan` folder of the project to implement the Tap system. A tap allows other items to see what is happening as a protocol is dissected. Since the project uses the C language, the pattern is developed with an event structure based on callbacks.
 
-The **Subject** role, which is the interface of the observable subject, is defined in `epan/tap.h` through the functions `register_tap`and `tap_queue_packet`which notifies all the Observer registered on that tap. The **Observer** interface is expressed by function pointers defined in `epan/tap.h`. Protocol dissectors in files such as `epan/dissectors/packet-ip.c` (and similar) act as the **Concrete Subject** role. Each of them obtains a tap handle via `register_tap` and then, after packet analysis, invokes `tap_queue_packet`. Every statistic module that calls `register_tap_listener` in `epan/tap.h` is a **Concrete Observer**.
+The **Subject** role, which is the interface of the observable subject, is defined in `epan/tap.h` through the functions `register_tap`and `tap_queue_packet`which notifies all the Observer registered on that tap. The **Observer** interface is expressed by function pointers defined in `epan/tap.h`. Protocol dissectors in files such as `epan/dissectors/packet-ip.c` act as the **Concrete Subject** role. Each of them obtains a tap handle via `register_tap` and then, after packet analysis, invokes `tap_queue_packet`. Every statistic module that calls `register_tap_listener` in `epan/tap.h` is a **Concrete Observer**.
 
 Instead of the *Observer* pattern, other strategies could be used:
 
 -	*Mediator pattern*: it is useful when objects have to cooperate in complex ways, avoiding the creation of a chaotic net of notifications. However, in this context it would introduce an unnecessary level of indirection;
--	*Polling*: it is very simple to implement and relies on each component periodically checking the data source for updates.
+-	*Polling*: it is very simple to implement and relies on each component periodically checking the data source for updates but in this way, packets may be processed with a delay. Furthermore, the Tap system is synchronous: listeners and dissectors process data simultaneously, a guarantee that *Polling* would break.
   
-Analysing the different options, the chosen pattern remains the best choice because it’s more flexible than the *Mediator* and more efficient than *Polling*, under which packets may be processed with a delay. Furthermore, the Tap system is synchronous: listeners and dissectors process data simultaneously, a guarantee that *Polling* would break.
+Analysing the different options, the chosen pattern remains the best choice because it’s more flexible than the *Mediator* and more efficient than *Polling*.
 
 ### Abstract Factory
 The Abstract Factory pattern provides an interface for creating families of related objects without specifying their concrete classes. In Wireshark it decouples the core engine from thousands of specific protocol implementations. Without it, the core would require a massive hardcoded list of all protocols, making maintenance rigid and preventing the addition of external plugins.
