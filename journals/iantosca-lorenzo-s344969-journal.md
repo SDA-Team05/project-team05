@@ -41,3 +41,7 @@
 - Resolved a Windows PowerShell character encoding issue (UnicodeEncodeError) during standard output redirection by forcing the UTF-8 execution flag to correctly generate the `pairing_metrics.txt` data report;
 - Integrated the extracted instability metrics into the software design report to mathematically validate the top-down layered architecture;
 - Correlated the numerical data to prove the extreme instability of GUI/orchestrator modules like `tshark` ($I = 1.000$) versus the foundational stability of core engines like `wsutil` and `epan`.
+
+## June 1st
+- Conducted a comprehensive text review and optimization of the "team05-software-design-report.md" file to strictly comply with the maximum word count constraints;
+- Done a meeting with the team members.

@@ -1,7 +1,7 @@
 # Software Report
 ## Code Dependencies
 
-In order to understand the structural coupling of the Wireshark source code, a static analysis of the file and modular dependencies was conducted using the "Understand" and "Sourcetrail" tools. 
+To understand the structural coupling of the Wireshark source code, a static analysis of file and module dependencies was conducted using the "Understand" and "Sourcetrail" tools. 
 
 ### Import Map and Subsystem Dependencies
 An Architecture Dependency Graph was generated to evaluate the interactions between the three main layers of the application: 
@@ -9,18 +9,18 @@ An Architecture Dependency Graph was generated to evaluate the interactions betw
 - `EPAN` (Core dissection engine)
 - `WSUTIL` (Base utilities)
 
-The quantitative analysis partially confirms a top-down layered architecture, but also highlights some architectural violations:
+The quantitative analysis partially confirms a top-down layered architecture, but also exposes architectural violations:
 * **Expected Top-Down Flow:** the system exhibits a strong reliance on the foundational layers. 
 
         `EPAN` heavily depends on `WSUTIL` (869,607 dependencies), confirming `WSUTIL`'s role as the fundamental utility module. 
         Furthermore, the `UI` properly relies on `EPAN` (8,437 dependencies) to trigger dissections and retrieve packet data.
 
-* **Architectural Violations (Design smells):** a strict layered architecture dictates that lower layers must not depend on upper layers. 
-However, the dependency graph revealed bidirectional coupling: 
+* **Architectural Violations (Design smells):** a strict layered architecture dictates that lower layers never depend on upper ones. 
+However, the dependency graph reveals bidirectional coupling: 
 
-        `EPAN` has 61 outgoing dependencies directed towards the `UI` layer
+        `EPAN` has 61 outgoing dependencies directed toward the `UI` layer
         `WSUTIL` has 2 dependencies pointing back to `EPAN`.
-        While numerically small compared to the main flow, these represent architectural leaks where the core engine and base utilities 
+        Altough numerically small compared to the main flow, these represent architectural leaks where the core engine and base utilities 
         are unnecessarily coupled with higher-level abstractions.
 
 <p align="center">
@@ -29,8 +29,8 @@ However, the dependency graph revealed bidirectional coupling:
   <em>Figure: Dependency graph generated via Understand, illustrating the massive expected top-down flow alongside the minor architectural violations (bidirectional red arrows).</em>
 </p>
 
-To support the visual analysis, the architectural coupling metrics (Fan-in $Ca$, Fan-out $Ce$, and Martin's Instability $I$) calculated on the macro-modules mathematically confirm the system's layered topology.
- Instability is calculated using the formula $I = \frac{Ce}{Ca + Ce}$, producing an index that ranges from 0 (maximum stability) to 1 (maximum instability).
+To support the visual analysis, the architectural coupling metrics (Fan-in $Ca$, Fan-out $Ce$, and Martin's Instability $I = \frac{Ce}{Ca + Ce}$) were computed on the macro-module.
+The instability index ranges from 0 (maximum stability) to 1 (maximum instability).
 
 | Module / Subsystem | Architectural Role       | Fan-in (Ca) | Fan-out (Ce) | Instability (I) |
 | :---               | :---                     | :---        | :---         | :---            |
@@ -39,16 +39,15 @@ To support the visual analysis, the architectural coupling metrics (Fan-in $Ca$,
 | `ui_qt`            | Presentation layer       | 2           | 9            | **0.818**       |
 | `tshark`           | CLI orchestrator         | 0           | 9            | **1.000**       |
 
-**Architectural Validation:**
-As expected in a healthy top-down architecture, the instability metrics polarize the system. Base modules such as `wsutil` and `epan` show an instability close to zero (respectively 0.000 and 0.158): with very high Fan-in, they act as structural pillars that cannot be modified without causing extensive recompilation. 
-Conversely, the presentation and orchestration layers (`ui_qt`, `tshark`) absorb most of the outgoing dependencies (high Fan-out); they are therefore "unstable" ($I between 0.818 and 1.000$), confirming their role as high-level orchestrators that are easy to modify without triggering cascading effects in the rest of the application.
+**Architectural Validation:** as expected in a healthy top-down architecture, instability metrics polarize the system. Base modules such as `wsutil` and `epan` score near zero (0.000 and 0.158 respectively): their high Fan-in makes them structural pillars whose modification would trigger extensive recompilation
+Conversely, the presentation and orchestration layers (`ui_qt`, `tshark`) carry the majority of outgoing dependencies and are therefore "unstable" ($I between 0.818 and 1.000$), confirming their role as high-level orchestrators that can be modified without cascading effects through the rest of the application.
 
 ### Top and Bottom Files by Dependency
 
-A static analysis of `#include` directives across the codebase was performed to identify the structural pillars (High Fan-in) and the main orchestrators (High Fan-out) of the system.
+A static analysis of `#include` directives across the codebase was performed to identify structural pillars (high Fan-in) and the main orchestrators (high Fan-out).
 
 #### Bottom Files (High Fan-out)
-These files represent the modules with the highest number of outgoing dependencies. They import a massive amount of header files to function.
+These files represent the modules with the highest number of outgoing dependencies. They import the largest number of header files.
 
 | Rank | File Path | Outgoing Dependencies | Layer / Subsystem |
 | :--- | :--- | :--- | :--- |
@@ -68,7 +67,7 @@ These files represent the modules with the highest number of outgoing dependenci
 | 14 | `./ui/stratoshark/stratoshark_main_window.cpp` | 58 | UI (Presentation) |
 | 15 | `./sharkd_session.c` | 55 | Daemon Entry Point |
 
-**Architectural Motivation:** The data strongly reflects the layered architecture. The files dominating this list are primarily entry points (`tshark.c`, `strato.c`) and UI orchestrators (`wireshark_main_window_slots.cpp`). Sitting at the very top of the execution pyramid, these files act as "god modules". To correctly render the GUI and coordinate the application, they must interact with the capture engine (`wiretap`), the dissection core (`epan`), configuration files, and numerous Qt graphical widgets. This structural requirement forces them to have an extreme Fan-out.
+**Architectural Motivation:**  files at the top of  this list are entry points (`tshark.c`, `strato.c`) and UI orchestrators (`wireshark_main_window_slots.cpp`). Sitting at the apex of the execution pyramid, they must interact with the capture engine (`wiretap`), the dissection core (`epan`), configuration subsystems and numerous Qt widgets; a structural requirement that forces extreme Fan-out and classifies them as god modules.
 
 
 <p align="center">
@@ -105,10 +104,8 @@ These files represent the most imported headers in the entire project. They are 
 | 14 | `<config.h>` | 251 | Global Configuration |
 | 15 | `"packet-tcp.h"` | 247 | Dissector Header |
 
-**Architectural Motivation:**
-The Fan-in ranking highlights the rigid modularity of Wireshark's dissection engine. At the very top, aside from global configurations (`config.h`), we find `epan/packet.h`. This file contains the fundamental C structures defining what a "network packet" is. Because Wireshark relies on thousands of independent dissector modules to decode different network protocols, every single one of them is forced to include this core definition. 
-These files are the foundational pillars of the software: they are highly stable, as a single modification to `epan/packet.h` would invalidate the compilation cache of over 2000 files, forcing a near-total recompilation of the project.
-
+**Architectural Motivation:** the Fan-in ranking highlights the rigid modularity of Wireshark's dissection engine. `epan/packet.h` is the most critical non-configuration header: it defines the fundamental C structures defining what a "network packet" is and every one of the thousands of independent dissector modules must include it.
+A single change to this file would invalidate the compilation cache of over 2,000 files, forcing a near-total rebuild of the project.
 
 <p align="center">
   <img src="./dependency%20graphs/packet_dependency_graph.png" alt="Dependency Graph of packet.h showing high fan-in" width="30%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); margin-bottom: 10px;">
@@ -117,16 +114,17 @@ These files are the foundational pillars of the software: they are highly stable
 </p>
 
 ### Logical Coupling and Architectural Anomalies
-In addition to static structural dependencies, an evolutionary analysis of the system was conducted by mining the Git version control history. The goal was to identify **knowledge dependencies** via **change coupling** (modules and files that frequently change together in the same commits despite potentially lacking an explicit structural dependency). 
+Beyond static dependencies, an evolutionary analysis was conducted by mining the Git version control history to identify **change coupling** (pairs of modules that frequently change together in the same commits, regardless of explicit structural dependencies). 
 
 To ensure the validity and mathematical soundness of the findings, a **cross-validation approach** was adopted by cross-checking two independent methodologies:
-1. An automated behavioral and evolution analysis platform (**CodeScene**).
-2. A custom targeted Python script (`cochange_analyzer.py`) analyzing the raw transaction history.
+1. An automated behavioral analysis platform (**CodeScene**).
+2. A custom Python script (`cochange_analyzer.py`) mining the raw transaction history.
 
-Both tools successfully identified severe coupling, though their different analytical heuristics (raw mathematical frequency vs. time-decayed behavioral analysis) highlighted distinct architectural hotspots:
+Both tools identified severe coupling, though their different heuristics (raw mathematical frequency vs. time-decayed behavioral analysis) highlighted distinct hotspots:
 
-**1. Cross-layer knowledge leak (identified via Python script):**
-The custom script revealed a high-risk `shotgun surgery` smell across system boundaries. Nearly 90% of the time a core architectural preference is altered (`epan/prefs.c`), developers are forced to synchronously update the layout implementation in the Qt presentation layer (`ui/qt/layout_preferences_frame.h`). This uncovers an implicit knowledge leak, as the core engine should ideally remain agnostic of GUI configurations.
+
+**1. Cross-layer knowledge leak (Python script)**
+The script uncovered a high-risk `shotgun surgery` smell across system boundaries. In approximately 90% of commits that modify `epan/prefs.c`, developers are forced to update the layout implementation in the Qt presentation layer (`ui/qt/layout_preferences_frame.h`). This reveals an implicit knowledge leak: the core engine carries implicit awareness of GUI layout decisions, violating the principle of layer independence.
 
 
 | File A (Core / Architecture module) | File B (Presentation / Context layer) | Co-change % (Python) | Risk category   |
@@ -134,8 +132,9 @@ The custom script revealed a high-risk `shotgun surgery` smell across system bou
 | `epan/prefs.c`                      | `ui/qt/layout_preferences_frame.h`    | 85.71%               | shotgun surgery |
 | `epan/prefs.h`                      | `ui/qt/layout_preferences_frame.cpp`  | 72.73%               | shotgun surgery |
 
-**2. High-density module coupling (identified via CodeScene):**
-Conversely, CodeScene behavioral engine prioritized modules with a **100% Degree of coupling** and high revision rates. 
+
+**2. High-density module coupling (CodeScene)**
+CodeScene behavioral engine prioritized modules with a **100% Degree of coupling** and high revision rates. 
 As shown in the extracted data, CodeScene highlights an extreme internal dependency within the UI subsystem. 
 
 | Entity (File A)                 | Coupled entity (File B)         | Degree of coupling | Average revisions |
@@ -146,16 +145,15 @@ As shown in the extracted data, CodeScene highlights an extreme internal depende
 
 This behavioral data proves that changes cascade rapidly through `packet_list` components due to tight logical binding. This architectural bottleneck forces continuous synchronization across UI files, driving up maintenance costs.
 
-**Architectural validation & Evolution motivations:**
+**Architectural validation & Evolution motivations**
 The empirical convergence between manual log parsing and CodeScene proprietary heuristics confirms a severe `shotgun surgery` design smell. 
-Nearly 90% of the time a core architectural structure or preference definition is altered (`epan/prefs.c`), developers are forced to synchronously update the layout implementation in the `Qt` presentation layer.
 This behavioral coupling uncovers an implicit knowledge leak across system boundaries. 
 Ideally, a layered software design implies that core engine subcomponents should remain entirely agnostic of presentation details and layout configurations. 
 By analyzing CodeScene Change Coupling view, it becomes evident that changes cascade rapidly through these modules due to the lack of an intermediate abstraction layer or data-driven binding mechanism. 
 This architectural bottleneck forces continuous synchronization across different layers, driving up maintenance costs and undermining the long-term evolvability of the Wireshark platform.
 
 ### Cross-validation of Static and Evolutionary metrics: The `tshark.c` case
-To further bridge the gap between static structural dependencies and evolutionary technical debt, CodeScene REST APIs were utilized to programmatically extract the project's top "hotspots" (`codescene_hotspots.json`). 
+To bridge teh gap between static structural dependencies and evolutionary technical debt, CodeScene REST APIs were utilized to programmatically extract the project's top "hotspots" (`codescene_hotspots.json`). 
 
 This extraction yielded a crucial architectural validation: `tshark.c`, previously identified in the static analysis as a "god module" with extreme Fan-out (83 outgoing dependencies), is mathematically ranked as one of the top 10 worst hotspots in the entire Wireshark codebase. 
 
@@ -163,8 +161,7 @@ According to the API data, `tshark.c` exhibits:
 * **Code health score:** 1.68 / 10.0 (Critical Red Zone)
 * **Recent revisions:** 87
 
-**Architectural motivation:** 
-This provides empirical proof of how structural design choices directly impact software evolvability. 
+**Architectural motivation:** This provides empirical proof of how structural design choices directly impact software evolvability. 
 The orchestration responsibilities centralized within `tshark.c` force it to be touched continuously during development (87 revisions).
 Because of its massive Fan-out, every modification is highly complex and error-prone, plummeting its `code health` to 1.68. 
 This perfectly demonstrates how static structural smells (the god module anti-pattern) directly manifest as severe evolutionary technical debt over time.
