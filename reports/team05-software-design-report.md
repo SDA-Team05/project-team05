@@ -224,7 +224,7 @@ Analysing the different options, the chosen pattern remains the best choice beca
 ### Abstract Factory
 The Abstract Factory pattern provides an interface for creating families of related objects without specifying their concrete classes. In Wireshark it decouples the core engine from thousands of specific protocol implementations. Without it, the core would require a massive hardcoded list of all protocols, making maintenance rigid and preventing the addition of external plugins.
 
-The *Abstract Factory* role is implemented by the `proto_register_protocol()` function in epan/proto.c, which defines the contract for system integration. The *Concrete Factory* role is played by individual dissector files (in epan/dissectors/) that "produce" and hand over their protocol definitions to the core. Finally, the Product is the `protocol_t` structure, representing the registered protocol within the engine.
+The *Abstract Factory* role is implemented by the `proto_register_protocol()` function in epan/proto.c, which defines the contract for system integration. The *Concrete Factory* role is played by individual dissector files (in epan/dissectors/) that "produce" and hand over their protocol definitions to the core. Finally, the *Product* is the `protocol_t` structure, representing the registered protocol within the engine.
 
 Instead of the Abstract Factory, other solutions could include:
 - *Builder Pattern*: It would allow step-by-step protocol configuration. However, it adds significant verbosity and memory overhead, making the startup process less efficient than a single function call.
