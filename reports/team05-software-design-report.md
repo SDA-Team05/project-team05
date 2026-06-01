@@ -145,13 +145,6 @@ As shown in the extracted data, CodeScene highlights an extreme internal depende
 
 This behavioral data proves that changes cascade rapidly through `packet_list` components due to tight logical binding. This architectural bottleneck forces continuous synchronization across UI files, driving up maintenance costs.
 
-**Architectural validation & Evolution motivations**
-The empirical convergence between manual log parsing and CodeScene proprietary heuristics confirms a severe `shotgun surgery` design smell. 
-This behavioral coupling uncovers an implicit knowledge leak across system boundaries. 
-Ideally, a layered software design implies that core engine subcomponents should remain entirely agnostic of presentation details and layout configurations. 
-By analyzing CodeScene Change Coupling view, it becomes evident that changes cascade rapidly through these modules due to the lack of an intermediate abstraction layer or data-driven binding mechanism. 
-This architectural bottleneck forces continuous synchronization across different layers, driving up maintenance costs and undermining the long-term evolvability of the Wireshark platform.
-
 ### Cross-validation of Static and Evolutionary metrics: The `tshark.c` case
 To bridge teh gap between static structural dependencies and evolutionary technical debt, CodeScene REST APIs were utilized to programmatically extract the project's top "hotspots" (`codescene_hotspots.json`). 
 
