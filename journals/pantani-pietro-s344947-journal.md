@@ -1,5 +1,11 @@
 # Activity Journal - Pietro Pantani (s344947)
 
+
+## May 2nd
+Activity done since last commit:
+- Updated dumpcap diagram
+- First draft of the Architectures report
+
 ## May 29th
 Activity done since last commit:
 - Updated diagram according to recommendations received after review
