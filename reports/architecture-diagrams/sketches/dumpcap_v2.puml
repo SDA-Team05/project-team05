@@ -16,7 +16,7 @@ Container_Boundary(dumpcap_res, "Dumpcap") {
 
     Component(packet_queue, "Packet Queue", "Component: C", "Decouples packet reception from file writing in multi-thread mode.")
 
-    Component(file_writer, "Ring Buffer & File Writer", "Component: C", "Manages asynchronous writing and automatic rotation of pcapng files.")
+    Component(file_writer, "Ring Buffer", "Component: C", "Manages asynchronous writing and automatic rotation of pcapng files.")
 }
 
 Rel(wireshark, sync_pipe, "Launches and communicates with", "IPC Sync Pipe")

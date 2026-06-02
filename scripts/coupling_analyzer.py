@@ -29,7 +29,11 @@ import os
 import re
 from collections import defaultdict
 
-BASE = r"C:\Users\Windows\Desktop\SDA\WS\wireshark"
+BASE = "" # <-- UPDATE THIS TO YOUR LOCAL WIRESHARK SOURCE PATH (for instance, /home/user/wireshark or C:\Users\user\wireshark)
+
+if not BASE:
+    print("ERROR: Please set the BASE variable to your local Wireshark source path.")
+    exit(1)    
 
 # ---------------------------------------------------------------------------
 # Module definitions  (path → file or directory, scanned recursively)
