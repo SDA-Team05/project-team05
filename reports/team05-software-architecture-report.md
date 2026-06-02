@@ -112,21 +112,21 @@ Alongside each component, the coresponding directory will be indicated.
 
 ### Core
 ```console
-/
+Location: /
 ```
 
 Written in C, this component acts as the central brain or orchestrator of the application. It contains the primary business logic, coordinating data flow and state changes between the user interface, the capture subsystem, and the dissection engine.
 
 ### GUI
 ```console
-/ui
+Location: /ui
 ```
 
 The only C++ component, utilizes the Qt framework to maintain cross-platform visual consistency and handling asynchronous UI updates without blocking the main rendering thread.
 
 ### Capture
 ```console
-/capture
+Location: /capture
 ```
 
 A C-based abstraction layer acting as the direct interface to the underlying capture engine. It manages the lifecycle of capture sessions, including configuration, initialization, state tracking, and session termination.
@@ -142,8 +142,9 @@ Once a block of packets is successfully committed to disk, Dumpcap signals the C
 By isolating the capture mechanics inside the standalone Dumpcap binary, the vast attack surface of the Wireshark App (especially the thousands of dissectors in Epan) is safely segregated from root-level OS access.
 
 ### Epan (Enhanced Packet ANalyzer)
+
 ```console
-/epan
+Location: /epan
 ```
 
 The packet analyzing engine, implemented in C. Epan is the most complex intellectual asset within Wireshark. It is responsible for packet dissection, dependency tracking between protocols, applying display filters, and executing plugins/macros.
@@ -244,11 +245,6 @@ file state and updated counters, closing the feedback loop toward Wireshark.
 
 3. Status information flows upward: the Ring Buffer notifies the Syncpipe Controller
    once packets are written, reflecting the actual direction of data in the pipeline.
-
-
-## C4 Model - Context Level
-
-The main software systems, stakeholders, and external libraries that interact directly with Wireshark as external entities are listed below:
 
 # Architectural characteristics
 
