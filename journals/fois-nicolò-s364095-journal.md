@@ -28,3 +28,9 @@ Activity done since last commit:
 - Investigated the actual nature of the Core module, clarifying its role as "glue code", rather than a well-defined standalone component
 - Performed a SOLID principles analysis for each L3 component
 - Developed a Python script to compute quantitative coupling metrics (Ca, Ce, Instability) by statically analyzing #include directives across 4109 source files (99.8% repository coverage), producing a ranked metrics table and a full cross-module dependency matrix
+
+## June 2nd
+Activity done since last commit:
+- Produced a corrected diagram removing the two non-modular components, fixing the relationship directions, and adding the missing Packet Queue (GAsyncQueue) for multi-thread capture mode
+- Drafted architectural overviews for the L1, L2, and L3 (dumpcap) diagrams with embedded PlantUML scripts 
+- reviewed the document to eliminate redundancies and fix conceptual imprecisions
