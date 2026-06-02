@@ -31,6 +31,6 @@ Activity done since last commit:
 
 ## June 2nd
 Activity done since last commit:
-- Produced a corrected diagram removing the two non-modular components, fixing the relationship directions, and adding the missing Packet Queue (GAsyncQueue) for multi-thread capture mode
+- Produced a corrected L3 dumpcap diagram removing the two non-modular components, fixing the relationship directions, and adding the missing Packet Queue (GAsyncQueue) for multi-thread capture mode
 - Drafted architectural overviews for the L1, L2, and L3 (dumpcap) diagrams with embedded PlantUML scripts 
 - reviewed the document to eliminate redundancies and fix conceptual imprecisions
