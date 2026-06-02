@@ -34,3 +34,10 @@ Activities done since last commit:
 - Analysis of the Tap system using project and official documentation to try detecting a new pattern.
 - The Observer pattern was identified in the 'epan' folder and in particular in the using of Tap.
 - Compared this pattern with other solutions such ad Mediator pattern searching for pros and cons.
+
+## June 2nd
+Activities done since last commit:
+- Continued the review of Observer pattern in Wireshark.
+- Updated the draft of 'Pattern' section in Sotware Design report adding conclusions obtained from the study of the Observer pattern.
+- Analysis of the identified patterns and dependencies to discover key connections, followed by the drafting of the 'Summary' section in the Software Design report.
+
