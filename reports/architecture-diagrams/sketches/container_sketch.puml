@@ -1,7 +1,7 @@
 @startuml C4_Elements_L2
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
-title C4 Container Diagram (L2) - Wireshark
+title Container Diagram (L2) - Wireshark
 
 Person(wiresharkUser, "User", "A person who wants to analyze network traffic")
 

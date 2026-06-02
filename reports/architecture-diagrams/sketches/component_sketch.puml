@@ -1,7 +1,7 @@
 @startuml C4_Elements_L3
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-title C4 Component Diagram (L3) - Wireshark
+title Component Diagram (L3) - Wireshark App
 
 Container_Boundary(wiresharkBoundary, "Wireshark App") {
     Component(gui, "GUI", "Component: C++/Qt", "Graphical Interface for user interaction, displaying captured data and configuring captures")

@@ -1,7 +1,7 @@
 @startuml C4_Elements_L3
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-title C4 Component Diagram (L3) - Dumpcap
+title Component Diagram (L3) - Dumpcap
 
 Container(wireshark, "Wireshark App", "Container: C, C++, Qt", "GUI application. Orchestrates the capture, reads files, decodes protocols and displays data.")
 ContainerDb(filesystem, "File System", "Container: Local OS File System", "Stores temporary and saved .pcapng files")

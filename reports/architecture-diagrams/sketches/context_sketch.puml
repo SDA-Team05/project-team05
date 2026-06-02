@@ -1,7 +1,7 @@
 @startuml C4_Elements
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
-title C4 System Context Diagram (L1) - Wireshark
+title System Context Diagram (L1) - Wireshark
 
 Person(wiresharkUser, "User", "A person who wants to analyze network traffic")
 
