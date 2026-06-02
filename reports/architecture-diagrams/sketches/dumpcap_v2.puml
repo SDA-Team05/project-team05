@@ -1,0 +1,33 @@
+@startuml C4_Elements_L3
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title C4 Component Diagram (L3) - Dumpcap
+
+Container(wireshark, "Wireshark App", "Container: C, C++, Qt", "GUI application. Orchestrates the capture, reads files, decodes protocols and displays data.")
+ContainerDb(filesystem, "File System", "Container: Local OS File System", "Stores temporary and saved .pcapng files")
+System_Ext(npcap, "npcap", "Captures raw packets on Windows systems")
+System_Ext(libpcap, "libpcap", "Captures raw packets on Unix-like systems")
+
+Container_Boundary(dumpcap_res, "Dumpcap") {
+
+    Component(sync_pipe, "Syncpipe Controller", "Component: C", "Manages IPC communication and control signals with the parent process.")
+
+    Component(cap_eng, "Capture Engine", "Component: C", "Interfaces with the OS network libraries to fetch raw frames.")
+
+    Component(packet_queue, "Packet Queue", "Component: C", "Decouples packet reception from file writing in multi-thread mode.")
+
+    Component(file_writer, "Ring Buffer & File Writer", "Component: C", "Manages asynchronous writing and automatic rotation of pcapng files.")
+}
+
+Rel(wireshark, sync_pipe, "Launches and communicates with", "IPC Sync Pipe")
+Rel(sync_pipe, cap_eng, "Initiates capture session", "Internal Call")
+Rel(npcap, cap_eng, "Provides raw packets", "Windows calls")
+Rel(libpcap, cap_eng, "Provides raw packets", "Unix calls")
+Rel(cap_eng, packet_queue, "Enqueues packets (multi-thread mode)", "GAsyncQueue")
+Rel(packet_queue, file_writer, "Dequeues and forwards packets", "Memory Buffer")
+Rel(cap_eng, file_writer, "Writes packets directly (single-thread mode)", "Direct Call")
+Rel(file_writer, sync_pipe, "Reports file state and packet counters", "Internal Call")
+Rel(file_writer, filesystem, "Writes/Read raw packets to/from", "File I/O")
+
+SHOW_LEGEND()
+@enduml
