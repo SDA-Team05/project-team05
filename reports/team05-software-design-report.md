@@ -220,31 +220,32 @@ Instead of the *Observer* pattern, alternative approaches could be:
 Analysing the different options, the chosen pattern remains the best choice because it’s more flexible than the *Mediator* and more efficient than *Polling*.
 
 ### Abstract Factory
-The Abstract Factory pattern provides an interface for creating families of related objects without specifying their concrete classes. In Wireshark it decouples the core engine from thousands of specific protocol implementations. Without it, the core would require a massive hardcoded list of all protocols, making maintenance rigid and preventing the addition of external plugins.
+The Abstract Factory pattern provides an interface for creating families of related objects without specifying their concrete classes. In Wireshark, it crucially decouples the core engine from thousands of protocol implementations. Without it, a massive hardcoded protocol list would rigidify maintenance and prevent external plugins.
 
-The *Abstract Factory* role is implemented by the `proto_register_protocol()` function in epan/proto.c, which defines the contract for system integration. The *Concrete Factory* role is played by individual dissector files (in epan/dissectors/) that "produce" and hand over their protocol definitions to the core. Finally, the *Product* is the `protocol_t` structure, representing the registered protocol within the engine.
+The *Abstract Factory* role is implemented by the `proto_register_protocol()` function in epan/proto.c, defining the system integration contract. The *Concrete Factory* role is fulfilled by individual dissector files (in epan/dissectors/) that produce and hand over protocol definitions to the core. The *Product* is the `protocol_t` structure representing the registered protocol.
 
 Instead of the Abstract Factory, other solutions could include:
-- *Builder Pattern*: It would allow step-by-step protocol configuration. However, it adds significant verbosity and memory overhead, making the startup process less efficient than a single function call.
-- *Prototype Pattern*: Dissectors would be cloned from a pre-configured `protocol_t` base object and customized only where needed. However, deep copying in C is complex and risky, requiring meticulous pointer management to prevent different protocols from accidentally sharing the same memory area.
+- *Builder Pattern*: It allows step-by-step protocol configuration. However, it adds significant verbosity and memory overhead, making startup less efficient than a single function call.
+- *Prototype Pattern*: Dissectors could be cloned from a pre-configured `protocol_t` base object and customized. Nevertheless, deep copying in C is complex, requiring meticulous pointer management to prevent accidental memory sharing between protocols.
 
 ### Composite Pattern
-The Composite pattern allows clients to treat individual objects and compositions uniformly via tree structures. In Wireshark this is essential for representing decoded packet data hierarchically, as network packets are inherently nested. Without it, handling entire protocols versus individual fields would require complex, separate logic, making navigation and UI rendering highly inefficient.
+The Composite pattern lets clients treat individual objects and compositions uniformly via tree structures. In Wireshark, this hierarchically represents inherently nested packet data. Without it, handling entire protocols versus individual fields would require complex, separate logic, crippling UI rendering and navigation efficiency.
 
-The *Component* role is fulfilled by the base `proto_node` (in epan/proto.h), which establishes the common interface and the pointers necessary for parent-child relationships between nodes. Its typedef aliases define the other roles: `proto_tree` acts as the *Composite* for nested elements, while `proto_item` acts as the *Leaf* for terminal, childless fields. This uniform interface allows dissectors to recursively add elements via functions like `proto_tree_add_item()` without distinguishing between the main tree and deep subtrees.
+The *Component* role is the base `proto_node` (in epan/proto.h), providing the common interface and parent-child pointers. Its aliases define the other roles: `proto_tree` acts as the *Composite* for nested elements, and `proto_item` as the *Leaf* for terminal, childless fields. This unified interface allows dissectors to recursively add elements via `proto_tree_add_item()` regardless of subtree depth.
 
-Instead of the Composite pattern, other solutions could be:
-- *Iterator Pattern*: Accessing fields via a sequential iterator object would decouple UI algorithms from the physical data structure. However this is purely an access pattern. On its own, it fails to solve how to physically represent the hierarchy and nesting of protocols in memory.
-- *Flyweight Pattern*: Sharing a common "intrinsic state" for repetitive fields would drastically reduce RAM consumption and allocation overhead during prolonged captures. Nevertheless it significantly increases architectural complexity in C and introduces indirect data access, causing computational overhead incompatible with real-time requirements.
+Instead of the Composite pattern, other solutions could include:
+- *Iterator Pattern*: A sequential iterator would decouple UI algorithms from the physical data structure. However, being purely an access pattern, it fails to solve the physical memory representation of protocol nesting.
+- *Flyweight Pattern*: Sharing an "intrinsic state" for repetitive fields would drastically reduce RAM consumption during prolonged captures. Nevertheless, it significantly increases C architectural complexity and introduces indirect data access, causing computational overhead incompatible with real-time requirements.
+
 
 ### Singleton Pattern
-The Singleton pattern ensures that there is only one instance of a given data structure and provides a global access point to it. In Wireshark it crucially manages dissector tables, which act as a “switchboard” to route packets to the correct protocol. Without it, modules might create separate tables, destroying the Single Source of Truth and causing packet routing to fail irreversibly.
+The Singleton pattern ensures a single instance of a data structure with a global access point. In Wireshark, it manages dissector tables to route packets. Without it, duplicate tables would destroy the Single Source of Truth, irreversibly breaking packet routing.
 
-Since Wireshark is written in C, the pattern is adapted to work around the lack of classes and private constructors. The *Singleton* role is achieved by hiding the data: a pointer to a global hash table is declared in epan/packet.c and marked with the keyword `static` (e.g., `static GHashTable *dissector_tables = NULL;`), preventing accidental clones. The *Global Access Point* is provided by public functions like `find_dissector_table()`, ensuring all dissectors safely interact with the exact same memory instance.
+Since Wireshark is in C, the pattern uses memory visibility instead of classes. The *Singleton* role hides data, in particular a global hash table pointer in epan/packet.c is marked static to prevent clones. The *Global Access Point* relies on public functions like find_dissector_table(), ensuring all dissectors safely share the exact same memory instance.
 
 Instead of the Singleton pattern, other solutions could include:
-- *Proxy Pattern*: An intermediary proxy could either defer loading the table into memory until the first request (Virtual Proxy), or act as a security layer restricting write-access to prevent external plugins from corrupting the routing rules (Protection Proxy). However, since routing occurs per captured packet, evaluating a proxy layer on every read operation introduces computational overhead incompatible with real-time dissection.
-- *Facade Pattern*: A global Facade could hide the entire complex group of routing interfaces, offering dissectors a unified high-level access point. The problem is that in a layered system, wrapping an entire functional area risks creating a massive bottleneck (a God Object). The current Singleton, on the other hand, is specifically limited to ensuring the uniqueness of the resource, keeping the architecture leaner and more modular.
+- *Proxy Pattern*: A proxy could defer memory allocation (Virtual Proxy) or block external plugins from altering rules (Protection Proxy). However, evaluating a proxy layer on every packet read adds computational overhead incompatible with real-time dissection.
+- *Facade Pattern*: A global Facade could hide complex routing interfaces behind a unified access point. Nevertheless, wrapping an entire functional area risks creating a massive bottleneck (a God Object). The current Singleton narrowly ensures resource uniqueness, keeping the architecture lean.
 
 ### Summary
 The analyzed design patterns directly explain specific architectural dependencies and structural metrics. 
