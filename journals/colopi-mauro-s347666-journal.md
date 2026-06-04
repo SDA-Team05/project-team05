@@ -26,3 +26,12 @@ Activity done since last commit:
 - Designed the Level 3 Component Diagram (C4 model) for the Dumpcap executable, mapping its internal C modules and boundaries.
 - Analyzed and documented the "Privilege Separation" security pattern, detailing the interactions between the Syncpipe Controller, Privilege Manager, and Capture Engine.
 - Formalized architectural considerations regarding the integration of external OS network libraries (libpcap/Npcap) and asynchronous File System I/O relative to the privileged container.
+
+## May 3th 
+- Gathered structural metrics of the Wireshark repository (total files, lines of code, and top-level modules) by cloning the repository and running analysis tools like cloc.
+- Extracted the number of unique contributors and active developers from the project's history using git shortlog.
+- Drafted the initial section of the overview.md report, defining the primary purpose of the system and identifying its main stakeholders (Network Administrators, Security Professionals, Software Developers, and Educators).
+
+## May 4th
+- Finalized the content of the Overview report, ensuring the text remained concise and strictly within the 1000-word
+- Reviewed and formatted the Overview markdown file.
