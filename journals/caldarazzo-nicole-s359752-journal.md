@@ -41,3 +41,8 @@ Activities done since last commit:
 - Updated the draft of 'Pattern' section in Sotware Design report adding conclusions obtained from the study of the Observer pattern.
 - Analysis of the identified patterns and dependencies to discover key connections, followed by the drafting of the 'Summary' section in the Software Design report.
 
+## June 5th
+Activities done since last commit:
+- Put together code snipptes used during analysis showing Observer, Strategy and Chain of Responsibility desing patterns.
+- Added code snippets in 'scripts' folder of the repository in different files.
+- Shortened the Software Design report to respect project rules.
