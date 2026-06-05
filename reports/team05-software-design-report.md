@@ -180,7 +180,7 @@ This pattern allows a request to travel along a chain of potential handlers unti
 
 In Wireshark's `epan ` folder, it implements the dissector chain: each dissector analyzes its packet level and forwards the payload to the next one through dispatch tables, without knowing who will handle it. The classic OOP pattern is adapted here to a C-based modular architecture.
 
-The **Handler** role is developed by the struct `dissector_handle_t` (defined in `epan/packet.c`) and the function type `dissector_t` declared (`epan/packet.h`). The successor link lives not in the Handler itself but in `dissector_table_t`. Each `epan/dissectors/packet-*.c` act as **Concrete Handler**, either processing the packet or forwarding it via `dissector_try_uint()` or `call_dissector()`. The **Client**, which sends the first request, is split in two: chain building with every `proto_reg_handoff_*()` call in `packet-*.c` files and request send with `epan_dissect_run()` in `epan/epan.c` which hands over the execution to the packet processing core in `epan/packet.c`, which bootstraps the chain by calling `call_dissector()` on the initial `frame_handle`.
+The **Handler** role is developed by the struct `dissector_handle` (defined in `epan/packet.c`) and the function type `dissector_t` declared (`epan/packet.h`). Each `epan/dissectors/packet-*.c` act as **Concrete Handler**, either processing the packet or forwarding it via `dissector_try_uint` or `call_dissector`. The **Client**, which sends the first request, is split in two: chain building with every `proto_reg_handoff_*` call in `packet-*.c` files and request send with `epan_dissect_run` in `epan/epan.c` which hands over the execution to the packet processing core in `epan/packet.c`, which bootstraps the chain by calling `call_dissector` on the initial `frame_handle`.
 
 Instead of *Chain of Responsibility*, alternative approaches could be:
 -	*centralized switch/if-else*: simple to use but only with few protocols;
@@ -209,7 +209,7 @@ This pattern defines an object which maintains a list of dependents and automati
 
 The discussed pattern is used in the `epan` folder to implement the Tap system. A tap allows other items to see what is happening as a protocol is dissected. As the project is written in C, the pattern is developed with an event structure based on callbacks.
 
-The **Subject** interface is defined in `epan/tap.h` through the functions `register_tap` and `tap_queue_packet` which notifies all the Observer registered on that tap. The **Observer** interface is expressed by function pointers defined in `epan/tap.h`. Protocol dissectors in files such as `epan/dissectors/packet-ip.c` act as the **Concrete Subject** role. They obtain a tap handle via `register_tap` and invoke `tap_queue_packet` after packet analysis. Any statistics module calling `register_tap_listener` in `epan/tap.h` is a **Concrete Observer**.
+The **Subject** interface is defined in `epan/tap.h` through the functions `register_tap` and `tap_queue_packet` which notifies all the Observer registered on that tap. The **Observer** interface is expressed by function pointers defined in `epan/tap.h`. Protocol dissectors in files such as `epan/dissectors/packet-ip.c` act as the **Concrete Subject** role. They obtain a tap handle via `register_tap` and invoke `tap_queue_packet` after packet analysis. Any statistics module (in `ui`)  calling `register_tap_listener` defined in `epan/tap.h` is a **Concrete Observer**.
 
 Instead of the *Observer* pattern, alternative approaches could be:
 
