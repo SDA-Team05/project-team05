@@ -39,7 +39,7 @@ First, strategies are added to global table*/
 int
 wtap_register_file_type_subtype(const struct file_type_subtype_info* fi)
 {
-    ...
+    /*...*/
     file_type_subtype = file_type_subtype_table_arr->len;
     g_array_append_val(file_type_subtype_table_arr, *fi);
     file_type_subtype_table = (const struct file_type_subtype_info*)(void *)file_type_subtype_table_arr->data;
@@ -51,13 +51,13 @@ wtap_register_file_type_subtype(const struct file_type_subtype_info* fi)
 void
 wtap_init_file_type_subtypes(const char* app_env_var_prefix)
 {
-    ...
+    /*...*/
     register_pcapng(app_env_var_prefix);
     register_pcap();
 
     for (unsigned i = 0; i < wtap_module_count; i++)
         wtap_module_reg[i].cb_func();
-    ...
+    /*...*/
 }
 
 /*try_open examines strategies and invokes the correct one by try_one_open*/
@@ -65,17 +65,17 @@ wtap_init_file_type_subtypes(const char* app_env_var_prefix)
 static int
 try_open(wtap *wth, unsigned int type, int *err, char **err_info)
 {
-    ...
+    /*...*/
     for (i = 0; i < heuristic_open_routine_idx && result == WTAP_OPEN_NOT_MINE; i++) {
         result = try_one_open(wth, &open_routines[i], err, err_info);
     }
-    ...
+    /*...*/
 }
 
 static int
 try_one_open(wtap *wth, const struct open_info *candidate, int *err, char **err_info)
 {
-    ...
+    /*...*/
     return candidate->open_routine(wth, err, err_info);
 }
 
@@ -84,7 +84,7 @@ try_one_open(wtap *wth, const struct open_info *candidate, int *err, char **err_
 static bool
 wtap_dump_open_finish(wtap_dumper *wdh, int *err, char **err_info)
 {
-    ...
+    /*...*/
     if (!(*file_type_subtype_table[wdh->file_type_subtype].dump_open)(wdh, err,
         err_info)) {
         return false;
