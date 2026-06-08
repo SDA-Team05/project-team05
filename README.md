@@ -2,7 +2,7 @@
 
 Software Design and Architecture project for Team 05
 
-## Reports
+## Reports
 
 - [Overview Report](reports/team05-overview-report.md)
 - [Software Design Report](reports/team05-software-design-report.md)
