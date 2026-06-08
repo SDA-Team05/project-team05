@@ -1,5 +1,9 @@
 # Activity Journal - Pietro Pantani (s344947)
 
+## June 8th
+Activity done since last commit:
+- Cut words from architecture report
+
 ## June 7th
 Activity done since last commit:
 - Improved components description and analysis reasonings in Architecture Report

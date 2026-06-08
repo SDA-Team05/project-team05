@@ -4,7 +4,7 @@ In this report, we will analyze the architecture of **Wireshark**, providing dia
 
 For diagramming, we've used **C4-PlantUML**, since it allowed us to quickly perform modifications to the diagrams and export them in vector formats. The source code for the diagrams is available in the [architecture-diagrams](./architecture-diagrams) folder
 
-To further analyze the code, we've used **Sourcetrail**, in order to identify dependencies, and a custom [Python script](../scripts/coupling_analyzer.py) to analyze the coupling of the various modules, in order to better understand their relationships.
+To further analyze the code, we've used **Sourcetrail**, in order to identify dependencies, and a custom [Python script](../scripts/coupling_analyzer.py) to analyze the coupling of the various modules, in order to better understand their relationships and the overall architectural characteristics.
 
 # Context Diagram (L1)
 
@@ -178,17 +178,15 @@ Also, just like Epan, it native plugins support, allowing the reading of new fil
 
 **Initialization**
 
-The process begins when a user initiates a capture through the GUI. Because capturing raw network packets requires elevated system privileges (such as root or administrator access), Wireshark deliberately isolates this risk. The Core does not launch the capture itself; instead, it delegates this task to the Capture component.
+The process begins when a user initiates a capture through the GUI. Because capturing raw network packets requires elevated system privileges, the Core does not launch the capture itself; instead, it delegates this task to the Capture component.
 
-The Capture component acts as the bridge-builder, spawning and initializing a completely separate, highly privileged command-line utility called Dumpcap. By keeping Dumpcap isolated, the rest of the massive Wireshark application can safely run with standard user privileges.
+The Capture component acts as the bridge-builder, launching Dumpcap, the packet sniffer. By keeping Dumpcap isolated, the rest of the Wireshark application can safely run with standard user privileges.
 
 **The Capture Loop**
 
 Once active, Dumpcap interfaces directly with the network card, grabbing raw packets off the wire at lightning speed. To prevent memory bloat during massive data streams, Wireshark adopts a "write-first, read-later" strategy. Dumpcap continuously writes these raw packets directly into a temporary file on the local hard disk.
 
-The coordination from this point forward is synchronized:
-
-As soon as Dumpcap finishes writing a block of packets to the disk, it notifies the Capture component via an Inter-Process Communication (IPC) pipe.
+The coordination from this point forward is synchronized: ss soon as Dumpcap finishes writing a block of packets to the disk, it notifies the Capture component via an Inter-Process Communication (IPC) pipe.
 
 The Capture component immediately passes this signal up to the application's central brain, the Core, letting it know that fresh data is ready to be processed.
 
@@ -204,7 +202,7 @@ Once Epan completes the analysis, the Core pushes the structured data back up to
 
 ### Solid Principles analysis
 
-The violations of the SOLID principles in Wireshark occur against the Interface Segregation Principle (ISP). Since C is a procedural language lacking native interface support, header files act as the nterfaces. Under this definition, major headers like the one for Epan (epan.h) heavily violate ISP: they expose a massive array of functions, forcing individual modules to depend on a sprawling API surface far larger than what they actually utilize.
+The violations of the SOLID principles in Wireshark occur against the Interface Segregation Principle (ISP). Since C is a procedural language lacking native interface support, header files act as the nterfaces. Under this definition, major headers like the one for Epan (`epan.h`) heavily violate ISP: they expose a massive array of functions, forcing individual modules to depend on an API surface far larger than what they actually utilize.
 
 
 ## 2. Dumpcap
@@ -271,12 +269,12 @@ Network environments continuously evolve, requiring Wireshark to support thousan
 
 #### Architectural Support
 
-This characteristic is achieved through a microkernel-like architecture for the **core**, driven by **"dissectors"**: the modules that break down packet payloads. The packet analyzer (`epan`) dictates *when* packets are processed but leaves the *how* to individual protocol plugins. Wireshark allows new dissectors to dynamically attach themselves to the engine at runtime. Moreover, the GUI and Wiretap can be extended too, allowing for additional files support and custom visualizations.
+This characteristic is achieved through a microkernel-like architecture for its analysis engine (`epan`): it dictates *when* packets are processed, but leaves the *how* to individual **dissectors** (protocol plugins).
 
 #### Coupling & Cohesion Analysis
 
-* **Low Coupling:** The coupling between the packet analyzer and individual protocol dissectors is highly minimized. They communicate through standard, abstract Data Coupling (passing raw packet buffers and standard header parameters). A change within the HTTP/2 dissector will not break the core architecture or impact the DNS dissector.
-* **High Cohesion:** Each dissector possesses ultimate functional cohesion; it has exactly one responsibility—parsing a specific layer of a single protocol format.
+* **Low Coupling:** The individual dissectors can be modified without ever touching the packet analyzer logic, since it only manages the analysis, without including parsing logic.
+* **High Cohesion:** Each dissector has very high cohesion, as it has exactly one responsibility: parsing a specific layer of a single protocol format.
 
 ---
 
@@ -294,8 +292,8 @@ The architecture structurally enforces a strict **Separation of Concerns** by sp
 
 #### Coupling & Cohesion Analysis
 
-* **Low Coupling between layers:** The capture engine (`dumpcap`), the analysis layer and the GUI are completely separated, thanks to the use of ICP Pipe and Async I/O. If the GUI freezes or crashes under a heavy rendering load, packet capturing remains entirely uninterrupted.
-* **High Layer Cohesion:** The UI layer contains zero packet-parsing logic: it simply queries APIs exposed by `epan`. This means developers can completely overhaul or replace the user interface without rewriting a single line of the underlying decoding algorithms.
+* **Low Coupling between layers:** The layers are completely separated thanks to the use of ICP Pipe and Async I/O. If the GUI freezes or crashes under a heavy rendering load, packet capturing remains entirely uninterrupted.
+* **High Layer Cohesion:** Each Layer has a well defined purpose, allowing developers to completely overhaul or replace the logic of a certain layer without ever touching the others.
 
 ---
 
@@ -310,4 +308,4 @@ Portability is built into the architecture by isolating OS-specific operations b
 #### Coupling & Cohesion Analysis
 
 * **Low Logical Coupling:** By wrapping platform-specific dependencies into a distinct abstraction layer, the core dissection engine is logically decoupled from host operating system calls.
-* **High Cohesion:** The capture backend focuses strictly on bridging network hardware buffers to cross-platform standard file formats (`pcapng`). This clean separation ensures that adapting Wireshark to new operating systems rarely requires modifications to its massive, core protocol dissection libraries.
+* **High Cohesion:** The capture backend focuses strictly on bridging network hardware buffers to cross-platform standard file formats (`pcapng`). This clean separation ensures that adapting Wireshark to new operating systems rarely requires modifications to the core protocol dissection libraries.
