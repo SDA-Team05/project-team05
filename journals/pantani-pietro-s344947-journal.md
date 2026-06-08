@@ -1,7 +1,18 @@
 # Activity Journal - Pietro Pantani (s344947)
 
+## June 8th
+Activity done since last commit:
+- Cut words from architecture report
 
-## May 2nd
+## June 7th
+Activity done since last commit:
+- Improved components description and analysis reasonings in Architecture Report
+
+## June 3d
+Activity done since last commit:
+- Exported SVG diagrams in Architecture Report
+
+## June 2nd
 Activity done since last commit:
 - Updated dumpcap diagram
 - First draft of the Architectures report
