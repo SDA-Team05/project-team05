@@ -10,7 +10,7 @@ System_Ext(libpcap, "libpcap", "Captures raw packets on Unix-like systems")
 
 Container_Boundary(dumpcap_res, "Dumpcap") {
 
-    Component(sync_pipe, "Syncpipe Controller", "Component: C", "Manages IPC communication and control signals with the parent process.")
+    Component(sync_pipe, "Sync Pipe Controller", "Component: C", "Manages IPC communication and control signals with the parent process.")
 
     Component(cap_eng, "Capture Engine", "Component: C", "Interfaces with the OS network libraries to fetch raw frames.")
 

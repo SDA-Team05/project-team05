@@ -69,7 +69,7 @@ on Windows), since it must open raw sockets via libpcap or npcap.
 Confining privileged code in a minimal process drastically reduces the attack surface:
 if a malicious packet were to cause a crash, the damage would be limited to dumpcap,
 leaving the operating system and GUI intact. Dumpcap has no graphical interface or
-analysis logic: it receives instructions from the Wireshark App via the sync pipe
+analysis logic: it receives instructions from the Wireshark App via the Sync Pipe
 (interface to capture, BPF filters, output path) and responds with status messages.
 
 ## File System
@@ -88,7 +88,7 @@ pre-existing `.pcapng` files opened for offline analysis.
 
 The container diagram makes two further architectural decisions explicit:
 
-1. Decoupling via IPC: communication between the GUI and dumpcap occurs via sync pipe,
+1. Decoupling via IPC: communication between the GUI and dumpcap occurs via Sync Pipe,
    not via direct function calls. The two processes can crash, be updated or replaced
    independently of each other.
 
@@ -109,13 +109,13 @@ made of. The File System has not been analyzed, since outside of the project sco
 ![Wireshark App Component Diagram](./architecture-diagrams/wiresharkapp_component_diagram.svg)
 
 In this section we are analyzing the main components that compose the Wireshark Container.
-Being the Wireshark App a monolith written almost entirely in C, we've decided to identify components as described on the C4 website, so as "a number of C files in a particular directory".
+Since the Wireshark App is written almost entirely in C, a procedural language, we've decided to identify components as described on the C4 website, so as "a number of C files in a particular directory".
 
 Some blocks of code that fall in this definition, such as the various Utils, have not been included since they have been considered not relevant for the core system architecture.
 
 TShark, a command-line version of Wireshark which leverages the same underlying components, has not been included in the analysis. This is because, even though it is present in the repository, in all of the official documentation it is considered as a separate project, and not part of the main Wireshark distribution. For this reason, it has been considered outside of the analysis scope.
 
-Alongside each component, the coresponding directory will be indicated.
+Alongside each component, the corresponding directory will be indicated.
 
 ### Core
 ```console
@@ -129,7 +129,7 @@ Written in C, this component acts as the central brain or orchestrator of the ap
 Location: /ui
 ```
 
-The only C++ component, utilizes the Qt framework to maintain cross-platform visual consistency and handling asynchronous UI updates without blocking the main rendering thread.
+The only C++ component, utilizes the Qt framework to maintain cross-platform visual consistency and handles asynchronous UI updates without blocking the main rendering thread.
 
 It can be expanded with plugins, which can add new toolbars and submenus.
 
@@ -160,7 +160,7 @@ It provides the following APIs:
 
 Moreover, Epan allows implementing custom dissectors as separate modules, thanks to native plugin support.
 
-This characteristic is very important from an architecture perspective, since it allows to add support for new protocols without touching any of the existing logic.
+This characteristic is very important from an architecture perspective, since it allows for adding support for new protocols without touching any of the existing logic.
 
 ### Wiretap
 
@@ -172,21 +172,21 @@ Wiretap is specialized C library purpose-built for file format abstraction.
 
 It acts as a translation layer capable of reading and writing packet data across more than 20 distinct capture file formats (such as .pcap, .pcapng, and .cap).
 
-Also, just like Epan, it native plugins support, allowing the reading of new file formats. 
+Also, just like Epan, it features native plugins support, allowing the reading of new file formats. 
 
 ### Complete flow
 
 **Initialization**
 
-The process begins when a user initiates a capture through the GUI. Because capturing raw network packets requires elevated system privileges, the Core does not launch the capture itself; instead, it delegates this task to the Capture component.
+The process begins when a user initiates a capture through the GUI. Because capturing raw network packets requires elevated system privileges that the main GUI process lacks, the Core delegates this task to the Capture component.
 
 The Capture component acts as the bridge-builder, launching Dumpcap, the packet sniffer. By keeping Dumpcap isolated, the rest of the Wireshark application can safely run with standard user privileges.
 
 **The Capture Loop**
 
-Once active, Dumpcap interfaces directly with the network card, grabbing raw packets off the wire at lightning speed. To prevent memory bloat during massive data streams, Wireshark adopts a "write-first, read-later" strategy. Dumpcap continuously writes these raw packets directly into a temporary file on the local hard disk.
+Once active, dumpcap interfaces directly with the network card, grabbing raw packets off the wire at lightning speed. To prevent memory bloat during massive data streams, Wireshark adopts a "write-first, read-later" strategy. Dumpcap continuously writes these raw packets directly into a temporary file on the local hard disk.
 
-The coordination from this point forward is synchronized: ss soon as Dumpcap finishes writing a block of packets to the disk, it notifies the Capture component via an Inter-Process Communication (IPC) pipe.
+The coordination from this point forward is synchronized: as soon as Dumpcap finishes writing a block of packets to the disk, it notifies the Capture component via an Inter-Process Communication (IPC) pipe.
 
 The Capture component immediately passes this signal up to the application's central brain, the Core, letting it know that fresh data is ready to be processed.
 
@@ -196,25 +196,22 @@ Once receiving the notification from the Capture component, the Core calls upon 
 
 Once Wiretap reads the data, the Core passes the raw bytes to Epan (the Enhanced Packet Analyzer), which delegates the data to a chain of specialized protocol dissectors, and finally routes the structured, human-readable results back up to the GUI for the user to see.
 
-The Core then passes these raw bytes to Epan for deep protocol dissection.
+### SOLID Principles Violations
 
-Once Epan completes the analysis, the Core pushes the structured data back up to the GUI via Signals & Slots to update the screen for the end-user.
-
-### Solid Principles Violations
-
-The violations of the SOLID principles in Wireshark occur against the **Interface Segregation Principle**(ISP). Since C is a procedural language lacking native interface support, header files act as the interfaces. Under this definition, major headers like the one for Epan (`epan.h`) heavily violate ISP: they expose a massive array of functions, forcing individual modules to depend on an API surface far larger than what they actually utilize.
+The violations of the SOLID principles in Wireshark occur in relation to the **Interface Segregation Principle** (ISP). Since C is a procedural language lacking native interface support, header files act as the interfaces. Under this definition, major headers like the one for Epan (`epan.h`) heavily violate ISP: they expose a massive array of functions, forcing individual modules to depend on an API surface far larger than what they actually utilize.
 
 ## 2. Dumpcap
 
 ![Dumpcap Component Diagram](./architecture-diagrams/dumpcap_component_diagram.svg)
 
 In this section we are analyzing the main components that compose Dumpcap.
-Since Dumpcap is a single 6000-lines C file, we've decided to identify components as groups of functions, that together serve a certain purpose.
 
-### Syncpipe Controller
+Since Dumpcap is a single 6000-lines C file, we've decided to identify components as a logical grouping of related functions.
 
-The Syncpipe Controller manages all communications with the parent process (Wireshark
-App) via the sync pipe. It propagates the start of the capture session into Dumpcap
+### Sync Pipe Controller
+
+The Sync Pipe Controller manages all communications with the parent process (Wireshark
+App) via the Sync Pipe. It propagates the start of the capture session into Dumpcap
 and, in the opposite direction, receives updates on the active file and packet counter
 from the Ring Buffer to forward them to Wireshark. This mechanism allows the GUI to
 know in real time which file to read and how many packets have been captured.
@@ -241,7 +238,7 @@ reception speed, reducing the risk of packet drops under high load.
 The Ring Buffer saves packets to disk in `.pcapng` format and manages automatic file
 rotation based on configurable thresholds (size, duration, packet count). It receives
 packets from the Packet Queue (multi-thread) or directly from the Capture Engine
-(single-thread). Once written, it notifies the Syncpipe Controller with the current
+(single-thread). Once written, it notifies the Sync Pipe Controller with the current
 file state and updated counters, closing the feedback loop toward Wireshark.
 
 ---
@@ -253,12 +250,12 @@ file state and updated counters, closing the feedback loop toward Wireshark.
    single-thread via direct write — making it adaptable to varying network load without
    requiring changes to the other components.
 
-3. Status information flows upward: the Ring Buffer notifies the Syncpipe Controller
+3. Status information flows upward: the Ring Buffer notifies the Sync Pipe Controller
    once packets are written, reflecting the actual direction of data in the pipeline.
 
 # Architectural characteristics
 
-Wireshark is a network protocol analyzer who relies heavily on a robust, highly modular software architecture. Its system design prioritizes key architectural characteristics: **extensibility**, **maintainability**, and **portability**.
+Wireshark is a network protocol analyzer that relies heavily on a robust, highly modular software architecture. Its system design prioritizes key architectural characteristics: **extensibility**, **maintainability**, and **portability**.
 
 ---
 
@@ -291,7 +288,7 @@ The architecture structurally enforces a strict **Separation of Concerns** by sp
 
 #### Coupling & Cohesion Analysis
 
-* **Low Coupling between layers:** The layers are completely separated thanks to the use of ICP Pipe and Async I/O. If the GUI freezes or crashes under a heavy rendering load, packet capturing remains entirely uninterrupted.
+* **Low Coupling between layers:** The layers are completely separated thanks to the use of IPC Pipe and Async I/O. If the GUI freezes or crashes under a heavy rendering load, packet capturing remains entirely uninterrupted.
 * **High Layer Cohesion:** Each Layer has a well defined purpose, allowing developers to completely overhaul or replace the logic of a certain layer without ever touching the others.
 
 ---
@@ -302,7 +299,7 @@ Wireshark must reliably run across a diverse range of environments, from Linux s
 
 #### Architectural Support
 
-Portability is built into the architecture by isolating OS-specific operations behind clean hardware-abstraction libraries. Instead of implementing direct network card packet captures natively, Wireshark relies on the **`libpcap`/`winpcap**` ecosystem.
+Portability is built into the architecture by isolating OS-specific operations behind clean hardware-abstraction libraries. Instead of implementing direct network card packet captures natively, Wireshark relies on the **`libpcap`/`npcap**` ecosystem.
 
 #### Coupling & Cohesion Analysis
 
