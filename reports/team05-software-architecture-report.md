@@ -2,7 +2,7 @@
 
 In this report, we will analyze the architecture of **Wireshark**, providing diagrams for three levels: Context, Container and Components.
 
-For diagramming, we've used **C4-PlantUML**, since it allowed us to quickly perform modifications to the diagrams and export them in vector formats. The source code for the diagrams is available in the [architecture-diagrams](./architecture-diagrams/code) folder
+For diagramming, we've used **C4-PlantUML**, since it allowed us to quickly perform modifications to the diagrams and export them in vector formats. The source code for the diagrams is available in the [architecture-diagrams/code](./architecture-diagrams/code) folder
 
 To further analyze the code, we've used **Sourcetrail**, in order to identify dependencies, and a custom [Python script](../scripts/coupling_analyzer.py) to analyze the coupling of the various modules, in order to better understand their relationships and the overall architectural characteristics.
 
@@ -16,7 +16,7 @@ systems it depends on — without exposing any internal implementation detail.
 
 ## Main System
 
-At the centre of the diagram sits **Wireshark System**, enclosed within the Wireshark Foundation boundary. It is a network protocol analyzer that captures, decodes, and visualizes network traffic. At this level of abstraction the system is a single black box; its internal structure (GUI, dumpcap, dissectors, etc.) is intentionally hidden.
+At the centre of the diagram sits **Wireshark System**, enclosed within the Wireshark Foundation boundary. It is a network protocol analyzer that captures, decodes, and visualizes network traffic. At this level of abstraction the system is a single black box; its internal structure (GUI, Dumpcap, dissectors, etc.) is intentionally hidden.
 
 ## Actor
 
@@ -35,7 +35,7 @@ Both are modelled as external systems because they fall outside the Wireshark Fo
 
 ---
 
-Delegating raw capture to external libraries is an intentional architectural choice: it abstracts away OS-specific packet capture APIs, making Wireshark portable across platforms without owning low-level driver code. The privilege boundary itself becomes explicit at the Container level, where `dumpcap` emerges as a separate elevated-privilege process while the GUI runs as a normal user.
+Delegating raw capture to external libraries is an intentional architectural choice: it abstracts away OS-specific packet capture APIs, making Wireshark portable across platforms without owning low-level driver code. The privilege boundary itself becomes explicit at the Container level, where `Dumpcap` emerges as a separate elevated-privilege process while the GUI runs as a normal user.
 
 ---
 
@@ -53,11 +53,11 @@ how containers communicate with each other.
 The Wireshark App is the main container, written in C, C++ and Qt. It is the process
 that the user launches directly and interacts with via GUI. Its responsibilities cover
 the entire analysis pipeline: orchestrating capture sessions, reading `.pcapng` files
-produced by dumpcap, dissecting network protocols and displaying results on screen.
+produced by Dumpcap, dissecting network protocols and displaying results on screen.
 
 All the user's operational choices (interface, filters, save format) pass through this
 container. The Wireshark App never directly accesses the network card: it entirely
-delegates that responsibility to dumpcap, with which it communicates via IPC Sync Pipe.
+delegates that responsibility to Dumpcap, with which it communicates via IPC Sync Pipe.
 
 ## Dumpcap
 
@@ -67,7 +67,7 @@ container in the system that requires elevated privileges (root on Unix, Adminis
 on Windows), since it must open raw sockets via libpcap or npcap.
 
 Confining privileged code in a minimal process drastically reduces the attack surface:
-if a malicious packet were to cause a crash, the damage would be limited to dumpcap,
+if a malicious packet were to cause a crash, the damage would be limited to Dumpcap,
 leaving the operating system and GUI intact. Dumpcap has no graphical interface or
 analysis logic: it receives instructions from the Wireshark App via the Sync Pipe
 (interface to capture, BPF filters, output path) and responds with status messages.
@@ -76,7 +76,7 @@ analysis logic: it receives instructions from the Wireshark App via the Sync Pip
 
 The File System is not a process but a storage, explicitly represented as a container
 because it plays a precise architectural role: it acts as a shared buffer between
-dumpcap and the Wireshark App.
+Dumpcap and the Wireshark App.
 
 Dumpcap writes packets to a temporary `.pcapng` file as fast as possible, avoiding
 bottlenecks caused by the GUI rendering speed. The Wireshark App asynchronously reads
@@ -88,7 +88,7 @@ pre-existing `.pcapng` files opened for offline analysis.
 
 The container diagram makes two further architectural decisions explicit:
 
-1. Decoupling via IPC: communication between the GUI and dumpcap occurs via Sync Pipe,
+1. Decoupling via IPC: communication between the GUI and Dumpcap occurs via Sync Pipe,
    not via direct function calls. The two processes can crash, be updated or replaced
    independently of each other.
 
@@ -111,7 +111,7 @@ made of. The File System has not been analyzed, since outside of the project sco
 In this section we are analyzing the main components that compose the Wireshark Container.
 Since the Wireshark App is written almost entirely in C, a procedural language, we've decided to identify components as described on the C4 website, so as "a number of C files in a particular directory".
 
-Some blocks of code that fall in this definition, such as the various Utils, have not been included since they have been considered not relevant for the core system architecture.
+Some blocks of code that fall under this definition, such as the various Utils, have not been included since they have been considered not relevant for the core system architecture.
 
 TShark, a command-line version of Wireshark which leverages the same underlying components, has not been included in the analysis. This is because, even though it is present in the repository, in all of the official documentation it is considered as a separate project, and not part of the main Wireshark distribution. For this reason, it has been considered outside of the analysis scope.
 
@@ -184,7 +184,7 @@ The Capture component acts as the bridge-builder, launching Dumpcap, the packet 
 
 **The Capture Loop**
 
-Once active, dumpcap interfaces directly with the network card, grabbing raw packets off the wire at lightning speed. To prevent memory bloat during massive data streams, Wireshark adopts a "write-first, read-later" strategy. Dumpcap continuously writes these raw packets directly into a temporary file on the local hard disk.
+Once active, Dumpcap interfaces directly with the network card, grabbing raw packets off the wire at lightning speed. To prevent memory bloat during massive data streams, Wireshark adopts a "write-first, read-later" strategy. Dumpcap continuously writes these raw packets directly into a temporary file on the local hard disk.
 
 The coordination from this point forward is synchronized: as soon as Dumpcap finishes writing a block of packets to the disk, it notifies the Capture component via an Inter-Process Communication (IPC) pipe.
 
@@ -202,7 +202,7 @@ The violations of the SOLID principles in Wireshark occur in relation to the **I
 
 ## 2. Dumpcap
 
-![Dumpcap Component Diagram](./architecture-diagrams/dumpcap_component_diagram.svg)
+![Dumpcap Component Diagram](./architecture-diagrams/Dumpcap_component_diagram.svg)
 
 In this section we are analyzing the main components that compose Dumpcap.
 
