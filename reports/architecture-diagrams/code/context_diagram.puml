@@ -1,0 +1,23 @@
+@startuml C4_Elements
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title System Context Diagram (L1) - Wireshark
+
+Person(wiresharkUser, "User", "A person who wants to analyze network traffic")
+
+' Main System
+Boundary(wiresharkBoundary, "Wireshark", "Wireshark Foundation") {
+    System(wireshark, "Wireshark System", "Network protocol analyzer. Captures, decodes, and visualizes network traffic.")
+}
+' External Systems
+System_Ext(npcap, "npcap", "Captures raw packets on Windows systems")
+System_Ext(libpcap, "libpcap", "Captures raw packets on Unix-like systems")
+
+' Relationships
+Rel(wiresharkUser, wireshark, "Configures captures and analyzes traffic")
+Rel(npcap, wireshark, "Provides raw packets")
+Rel(libpcap, wireshark, "Provides raw packets")
+
+SHOW_LEGEND()
+
+@enduml

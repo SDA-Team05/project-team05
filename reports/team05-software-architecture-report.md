@@ -2,7 +2,7 @@
 
 In this report, we will analyze the architecture of **Wireshark**, providing diagrams for three levels: Context, Container and Components.
 
-For diagramming, we've used **C4-PlantUML**, since it allowed us to quickly perform modifications to the diagrams and export them in vector formats. The source code for the diagrams is available in the [architecture-diagrams](./architecture-diagrams) folder
+For diagramming, we've used **C4-PlantUML**, since it allowed us to quickly perform modifications to the diagrams and export them in vector formats. The source code for the diagrams is available in the [architecture-diagrams](./architecture-diagrams/code) folder
 
 To further analyze the code, we've used **Sourcetrail**, in order to identify dependencies, and a custom [Python script](../scripts/coupling_analyzer.py) to analyze the coupling of the various modules, in order to better understand their relationships and the overall architectural characteristics.
 
