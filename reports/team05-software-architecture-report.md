@@ -200,10 +200,9 @@ The Core then passes these raw bytes to Epan for deep protocol dissection.
 
 Once Epan completes the analysis, the Core pushes the structured data back up to the GUI via Signals & Slots to update the screen for the end-user.
 
-### Solid Principles analysis
+### Solid Principles Violations
 
-The violations of the SOLID principles in Wireshark occur against the Interface Segregation Principle (ISP). Since C is a procedural language lacking native interface support, header files act as the nterfaces. Under this definition, major headers like the one for Epan (`epan.h`) heavily violate ISP: they expose a massive array of functions, forcing individual modules to depend on an API surface far larger than what they actually utilize.
-
+The violations of the SOLID principles in Wireshark occur against the **Interface Segregation Principle**(ISP). Since C is a procedural language lacking native interface support, header files act as the interfaces. Under this definition, major headers like the one for Epan (`epan.h`) heavily violate ISP: they expose a massive array of functions, forcing individual modules to depend on an API surface far larger than what they actually utilize.
 
 ## 2. Dumpcap
 
