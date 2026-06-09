@@ -45,3 +45,8 @@ Activities done since last commit:
 Activities done since last commit:
 - Conducted a comparative evaluation of alternative design solutions for global resource access, analyzing the performance trade-offs of the Proxy and Facade patterns;
 - Finalized the fourth architectural pattern analysis and updated the design report with the documentation of the Singleton pattern.
+
+## May 31th
+Activities done since last commit:
+- Extracted and formatted representative source code snippets from the Wireshark repository to provide concrete implementation examples for the analyzed design patterns;
+- Reviewed and heavily refactored the descriptions within the design report, reducing the total word count to comply with the project's length constraints.
