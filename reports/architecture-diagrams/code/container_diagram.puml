@@ -21,7 +21,7 @@ System_Boundary(wiresharkBoundary, "Wireshark System") {
 
 Rel(wiresharkUser, wiresharkApp, "Configures captures and analyzes traffic")
 
-Rel(wiresharkApp, dumpcap, "Controls and monitors status", "IPC Sync Pipe")
+Rel(wiresharkApp, dumpcap, "Launches and communicates with", "IPC Sync Pipe")
 
 Rel(npcap, dumpcap, "Provides raw packets", "Windows calls")
 Rel(libpcap, dumpcap, "Provides raw packets", "Unix calls")

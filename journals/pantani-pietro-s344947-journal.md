@@ -3,6 +3,11 @@
 ## June 8th
 Activity done since last commit:
 - Cut words from architecture report
+- Fixed typos and incosistencies with diagrams
+
+## June 8th
+Activity done since last commit:
+- Cut words from architecture report
 
 ## June 7th
 Activity done since last commit:
