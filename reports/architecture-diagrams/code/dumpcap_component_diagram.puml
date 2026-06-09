@@ -27,7 +27,8 @@ Rel(cap_eng, packet_queue, "Enqueues packets (multi-thread mode)", "GAsyncQueue"
 Rel(packet_queue, file_writer, "Dequeues and forwards packets", "Memory Buffer")
 Rel(cap_eng, file_writer, "Writes packets directly (single-thread mode)", "Direct Call")
 Rel(file_writer, sync_pipe, "Reports file state and packet counters", "Internal Call")
-Rel(file_writer, filesystem, "Writes/Read raw packets to/from", "File I/O")
+Rel(file_writer, filesystem, "Writes raw packets to", "File I/O")
+Rel(wireshark, filesystem, "Reads packets from and writes packets to", "File I/O")
 
 SHOW_LEGEND()
 @enduml
