@@ -182,7 +182,7 @@ Since C is a procedural language lacking native interface support, header files 
 
 ## 2. Dumpcap
 
-![Dumpcap Component Diagram](./architecture-diagrams/Dumpcap_component_diagram.svg)
+![Dumpcap Component Diagram](./architecture-diagrams/dumpcap_component_diagram.svg)
 
 In this section we are analyzing the main components that compose Dumpcap.
 
