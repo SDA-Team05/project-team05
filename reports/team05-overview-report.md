@@ -19,7 +19,7 @@ Wireshark can read and write a vast array of capture file formats (such as .pcap
 ## System Description
 Wireshark is a complex and highly modular open-source software project. It is primarily written in C, with the GUI written in C++. The architecture separates concerns into distinct layers:
 - A packet capture layer leveraging `libpcap`/`npcap`.
-- A `core` that handles the packet analysis and dissection, thanks to the dedicated packet analysis engine `epan` (Ethereal Packet Analysis Engine, named after the original name of Wireshark, *Ethereal*)
+- A `core` that handles the packet analysis and dissection, thanks to the dedicated packet analysis engine `epan` (Ethereal Packet Analysis Engine, named after the original name of Wireshark, *Ethereal*).
 - The Graphical User Interface (`gui`).
 
 The system is highly extensible, allowing developers to add custom protocol dissectors via plugin support.
