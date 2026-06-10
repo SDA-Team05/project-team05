@@ -266,7 +266,7 @@ Wireshark must reliably run across a diverse range of environments, from Linux s
 
 #### Architectural Support
 
-Portability is built into the architecture by isolating OS-specific operations behind clean hardware-abstraction libraries. Instead of implementing direct network card packet captures natively, Wireshark relies on the **`libpcap`/`npcap**` ecosystem.
+Portability is built into the architecture by isolating OS-specific operations behind clean hardware-abstraction libraries. Instead of implementing direct network card packet captures natively, Wireshark relies on the `libpcap`/`npcap` ecosystem.
 
 #### Coupling & Cohesion Analysis
 
