@@ -94,7 +94,7 @@ Since the Wireshark App is written almost entirely in C, a procedural language, 
 
 Some blocks of code that fall under this definition, such as the various Utils, have not been included since they have been considered not relevant for the core system architecture.
 
-TShark, the command-line version of Wireshark which leverages the same underlying components, has not been included in the analysis. This is because, even though it is present in the repository, in all of the official documentation it is considered as a separate project, and not part of the main Wireshark distribution. For this reason, it has been considered outside of the analysis scope.
+TShark, the command-line version of Wireshark which leverages the same underlying components, has not been included in the analysis. This is because, even though it is present in the repository, in all of the official documentation it is considered as a separate project, and not part of the main Wireshark architecture. For this reason, it has been considered outside of the analysis scope.
 
 Alongside each component, the corresponding directory will be indicated.
 
